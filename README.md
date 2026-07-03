@@ -13,6 +13,9 @@ You pilot a Ship in constant forward motion. You never stop, you only steer. Sur
 - **Ammo** is consumed by firing and replenished by pickups. Run dry and your Attack reverts to Neutral.
 - **Boost** is a draining/regenerating meter — spend it to speed up or brake, but deplete it and it needs a cooldown.
 - **Attack pickups** swap your current Attack (Double, Spread, ...). You hold exactly one at a time.
+- **SP pickups** bank a persistent currency. Between Runs, spend it in the **Skill Tree** — a web of passive upgrades (hull, gunnery, handling, greed) bought node-by-node outward from the root. Progress is saved in your browser; a full respec is one menu entry away.
+
+Everything runs from the **Console** — the terminal the game boots into. Launch Runs, browse the Skill Tree, and toggle scanlines from there with the arrow keys.
 
 ## Controls
 
@@ -22,6 +25,8 @@ You pilot a Ship in constant forward motion. You never stop, you only steer. Sur
 | ↑ | Boost (faster) |
 | ↓ | Brake (slower) |
 | M | Mute sound |
+
+In the Console: arrow keys to navigate, Enter to select/buy, Esc to go back.
 
 Firing is automatic. Keyboard required — desktop only for now.
 
