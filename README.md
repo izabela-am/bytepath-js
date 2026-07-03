@@ -8,7 +8,7 @@ A browser arcade shooter in vanilla TypeScript + Canvas 2D. A port of [BYTEPATH]
 
 ## The game
 
-You pilot a Ship in constant forward motion — you never stop, you only steer. Survive as long as you can while the Director escalates enemy pressure every 22 seconds. There is no win condition: every Run ends in death and yields a Score.
+You pilot a Ship in constant forward motion. You never stop, you only steer. Survive as long as you can while the Director escalates enemy pressure every 22 seconds. There is no win condition: every Run ends in death and yields a Score.
 
 - **Ammo** is consumed by firing and replenished by pickups. Run dry and your Attack reverts to Neutral.
 - **Boost** is a draining/regenerating meter — spend it to speed up or brake, but deplete it and it needs a cooldown.
