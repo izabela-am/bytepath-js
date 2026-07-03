@@ -28,6 +28,9 @@ export const Palette = {
   /** Score. */
   score: '#f4e04d',
 
+  /** SP — the persistent Skill Tree currency. */
+  sp: '#b36bff',
+
   /** Negative / flash accent — used for hit flashes and warnings. */
   negative: '#ffffff',
 } as const;

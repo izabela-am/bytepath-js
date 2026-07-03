@@ -101,6 +101,32 @@ describe('depletion -> cooldown -> recovery', () => {
   });
 });
 
+describe('createBoostState with modifiers', () => {
+  it('defaults to the v1 constants (identity => v1 behavior)', () => {
+    const state = createBoostState();
+    expect(state.max).toBe(BOOST_MAX);
+    expect(state.regenRate).toBe(BOOST_REGEN_RATE);
+    expect(state.current).toBe(BOOST_MAX);
+  });
+
+  it('honors a raised maxBoost as ceiling and starting charge', () => {
+    const state = createBoostState(150, BOOST_REGEN_RATE);
+    expect(state.current).toBe(150);
+    state.current = 140;
+    // Regen clamps to the raised max, not the v1 BOOST_MAX.
+    advance(state, 5, 60, false);
+    expect(state.current).toBe(150);
+  });
+
+  it('regenerates at a modified boostRegen rate', () => {
+    const state = createBoostState(BOOST_MAX, BOOST_REGEN_RATE * 2);
+    state.current = 0;
+    state.cooldown = 0;
+    advance(state, 1, 60, false);
+    expect(state.current).toBeCloseTo(BOOST_REGEN_RATE * 2, 5);
+  });
+});
+
 describe('canBoost', () => {
   it('is false when meter is empty', () => {
     const state = createBoostState();

@@ -164,6 +164,15 @@ describe('Director resource cadence', () => {
     advance(ammo.director, RESOURCE_INTERVAL);
     expect(ammo.resources[0]).toBe('Ammo');
   });
+
+  it('includes SP in the resource rotation', () => {
+    // Boost band is [0, 0.45), SP band is [0.45, 0.65). A constant 0.5 roll lands
+    // in the SP band for every rand call, so whichever roll pickResource consumes
+    // resolves to SP regardless of how the shared RNG is spent on enemy spawns.
+    const { director, resources } = makeDirector(fakeRand([0.5]));
+    advance(director, RESOURCE_INTERVAL);
+    expect(resources).toContain('SP');
+  });
 });
 
 describe('Director determinism', () => {

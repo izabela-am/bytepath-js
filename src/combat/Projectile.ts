@@ -31,6 +31,8 @@ export interface ProjectileOptions {
   color?: PaletteColor;
   /** Damage dealt on hit. Defaults to PROJECTILE_DAMAGE. */
   damage?: number;
+  /** Travel speed in px/s. Defaults to PROJECTILE_SPEED. */
+  speed?: number;
 }
 
 export class Projectile extends GameObject {
@@ -48,7 +50,7 @@ export class Projectile extends GameObject {
     this.damage = options.damage ?? PROJECTILE_DAMAGE;
     this.radius = PROJECTILE_RADIUS;
 
-    const v = vectorFromAngle(this.angle, PROJECTILE_SPEED);
+    const v = vectorFromAngle(this.angle, options.speed ?? PROJECTILE_SPEED);
     this.vx = v.x;
     this.vy = v.y;
   }

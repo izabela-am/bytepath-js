@@ -70,4 +70,20 @@ describe('ship health', () => {
     for (let i = 0; i < 100; i++) updateHealth(s, 1 / 60);
     expect(s.invuln).toBe(0);
   });
+
+  it('defaults max to SHIP_MAX_HP (identity => v1 behavior)', () => {
+    const s = createHealthState();
+    expect(s.max).toBe(SHIP_MAX_HP);
+    expect(s.current).toBe(SHIP_MAX_HP);
+  });
+
+  it('honors a raised maxHp as ceiling and starting HP', () => {
+    const s = createHealthState(150);
+    expect(s.max).toBe(150);
+    expect(s.current).toBe(150);
+    // Damage/death rules are unchanged by the higher ceiling.
+    const killed = applyDamage(s, 30);
+    expect(killed).toBe(false);
+    expect(s.current).toBe(120);
+  });
 });

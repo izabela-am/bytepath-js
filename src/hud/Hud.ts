@@ -22,6 +22,8 @@ export interface HudSnapshot {
   maxBoost: number;
   attackName: string;
   score: number;
+  /** SP collected this Run so far (shown near the Score in the SP color). */
+  sp: number;
   /** Previous Run's Score to show as "LAST RUN", or null to hide it. */
   lastRunScore: number | null;
 }
@@ -66,7 +68,12 @@ export class Hud {
 
     // Score, top-right.
     ctx.fillStyle = Palette.score;
+    ctx.textAlign = 'right';
     ctx.fillText(`${s.score}`, PLAYFIELD_WIDTH - MARGIN, MARGIN + 8);
+
+    // SP collected this Run, just below the Score in the SP color.
+    ctx.fillStyle = Palette.sp;
+    ctx.fillText(`SP ${s.sp}`, PLAYFIELD_WIDTH - MARGIN, MARGIN + 8 + 10);
 
     // Transient "LAST RUN" line, top-left.
     if (s.lastRunScore !== null) {

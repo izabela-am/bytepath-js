@@ -18,7 +18,7 @@ import {
   type Attack,
   type AttackName,
 } from './attacks';
-import { Projectile } from './Projectile';
+import { Projectile, PROJECTILE_SPEED, PROJECTILE_DAMAGE } from './Projectile';
 import { ShootEffect } from './ShootEffect';
 
 /** Maximum Ammo the pool can hold; also the starting value. */
@@ -35,20 +35,56 @@ export interface FireSource {
   angle: number;
 }
 
+/**
+ * Per-Run firing stats, resolved from the Skill Tree modifiers by the Stage and
+ * passed in as plain numbers (keeping this module free of any skilltree import).
+ * Every field defaults to its v1 constant, so an omitted bag — or one built from
+ * identity modifiers — reproduces v1 firing exactly.
+ */
+export interface AttackStats {
+  /** Maximum Ammo pool size and starting Ammo. */
+  maxAmmo: number;
+  /** Projectile travel speed in px/s. */
+  projectileSpeed: number;
+  /** Projectile damage per hit. */
+  projectileDamage: number;
+  /**
+   * Shots-per-second multiplier. The Attack's base `fireInterval` is divided by
+   * this, so `fireRate = 2` fires twice as often. Identity is 1.
+   */
+  fireRate: number;
+}
+
+/** v1-equivalent firing stats (identity modifiers). */
+export const DEFAULT_ATTACK_STATS: AttackStats = {
+  maxAmmo: MAX_AMMO,
+  projectileSpeed: PROJECTILE_SPEED,
+  projectileDamage: PROJECTILE_DAMAGE,
+  fireRate: 1,
+};
+
 export class AttackSystem {
   private readonly area: Area;
   private readonly timer: Timer;
+  private readonly stats: AttackStats;
 
   private attack: Attack = NEUTRAL_ATTACK;
-  private ammoValue = MAX_AMMO;
+  private ammoValue: number;
 
   /** Seconds until the next automatic trigger. */
   private cycle = 0;
 
-  constructor(area: Area, timer: Timer) {
+  constructor(area: Area, timer: Timer, stats: AttackStats = DEFAULT_ATTACK_STATS) {
     this.area = area;
     this.timer = timer;
-    this.cycle = this.attack.fireInterval;
+    this.stats = stats;
+    this.ammoValue = stats.maxAmmo;
+    this.cycle = this.fireInterval();
+  }
+
+  /** The current Attack's cadence after the `fireRate` multiplier. */
+  private fireInterval(): number {
+    return this.attack.fireInterval / this.stats.fireRate;
   }
 
   /** The current Attack (starts Neutral). */
@@ -61,14 +97,14 @@ export class AttackSystem {
     return this.attack.name;
   }
 
-  /** Current Ammo (0..MAX_AMMO). */
+  /** Current Ammo (0..maxAmmo). */
   get ammo(): number {
     return this.ammoValue;
   }
 
   /** Maximum Ammo, exposed for the HUD. */
   get maxAmmo(): number {
-    return MAX_AMMO;
+    return this.stats.maxAmmo;
   }
 
   /**
@@ -81,7 +117,7 @@ export class AttackSystem {
     // Catch up on any triggers owed within this dt (mirrors Timer.every).
     while (this.cycle <= 0) {
       this.fire(source);
-      this.cycle += this.attack.fireInterval;
+      this.cycle += this.fireInterval();
     }
   }
 
@@ -91,12 +127,12 @@ export class AttackSystem {
    */
   setAttack(name: AttackName): void {
     this.attack = ATTACKS[name];
-    this.cycle = this.attack.fireInterval;
+    this.cycle = this.fireInterval();
   }
 
-  /** Add Ammo, clamped to [0, MAX_AMMO]. Ammo pickups call this. */
+  /** Add Ammo, clamped to [0, maxAmmo]. Ammo pickups call this. */
   addAmmo(n: number): void {
-    this.ammoValue = clamp(this.ammoValue + n, 0, MAX_AMMO);
+    this.ammoValue = clamp(this.ammoValue + n, 0, this.stats.maxAmmo);
   }
 
   private fire(source: FireSource): void {
@@ -105,7 +141,7 @@ export class AttackSystem {
       this.attack = NEUTRAL_ATTACK;
     }
 
-    this.ammoValue = clamp(this.ammoValue - this.attack.ammoCost, 0, MAX_AMMO);
+    this.ammoValue = clamp(this.ammoValue - this.attack.ammoCost, 0, this.stats.maxAmmo);
 
     const muzzle = vectorFromAngle(source.angle, MUZZLE_OFFSET);
     const mx = source.x + muzzle.x;
@@ -116,7 +152,14 @@ export class AttackSystem {
       if (shot.randomSpreadHalfAngle) {
         angle += randomRange(-shot.randomSpreadHalfAngle, shot.randomSpreadHalfAngle);
       }
-      this.area.add(new Projectile(mx, my, { angle, color: this.attack.color }));
+      this.area.add(
+        new Projectile(mx, my, {
+          angle,
+          color: this.attack.color,
+          speed: this.stats.projectileSpeed,
+          damage: this.stats.projectileDamage,
+        }),
+      );
     }
 
     this.area.add(new ShootEffect(mx, my, this.timer, this.attack.color));

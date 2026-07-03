@@ -6,6 +6,8 @@ import {
   AMMO_PICKUP_AMOUNT,
   BOOST_PICKUP_AMOUNT,
   ATTACK_PICKUP_CHOICES,
+  SP_PICKUP_BASE_VALUE,
+  resolveSpPickupValue,
   type AttackSink,
   type BoostSink,
 } from './pickupEffects';
@@ -59,5 +61,29 @@ describe('pickup effects', () => {
     const spy = vi.spyOn(sink, 'addAmmo');
     applyAmmoPickup(sink);
     expect(spy).toHaveBeenCalledOnce();
+  });
+});
+
+describe('resolveSpPickupValue', () => {
+  it('banks the base value (1) under the identity modifier', () => {
+    // applyModifier(1, {flat:0,percent:0}) === 1.
+    expect(resolveSpPickupValue(SP_PICKUP_BASE_VALUE)).toBe(1);
+  });
+
+  it('rounds a fractional effective value to the nearest integer', () => {
+    expect(resolveSpPickupValue(2.4)).toBe(2);
+    expect(resolveSpPickupValue(2.5)).toBe(3);
+    expect(resolveSpPickupValue(1.5)).toBe(2);
+  });
+
+  it('floors at 0 so a modifier can never bank negative SP', () => {
+    expect(resolveSpPickupValue(-3)).toBe(0);
+    expect(resolveSpPickupValue(-0.4)).toBe(0);
+  });
+
+  it('scales up with a larger effective value', () => {
+    // e.g. base 1 with +150% => applyModifier(1, {percent:1.5}) = 2.5 => 3.
+    expect(resolveSpPickupValue(2.5)).toBe(3);
+    expect(resolveSpPickupValue(5)).toBe(5);
   });
 });

@@ -9,6 +9,7 @@ import {
   updateBoost,
   canBoost,
   BOOST_MAX,
+  BOOST_REGEN_RATE,
   type BoostState,
 } from './boost';
 import {
@@ -38,10 +39,35 @@ export interface HealthInfo {
 // Motion tuning, tutorial-scale (the original also runs at 480x270).
 const BASE_MAX_VELOCITY = 100; // px/s cruising speed
 const ACCELERATION = 100; // px/s^2 toward the current max velocity
-const TURN_RATE = 1.66 * Math.PI; // rad/s steering rate
+const TURN_RATE = 1.66 * Math.PI; // rad/s steering rate (v1 baseline)
 const BOOST_MULTIPLIER = 1.5; // ArrowUp: faster
 const BRAKE_MULTIPLIER = 0.5; // ArrowDown: slower
 const COLLISION_RADIUS = 8;
+
+/**
+ * Per-Run Ship stats resolved from the Skill Tree modifiers by the Stage and
+ * passed in as plain numbers (keeping the Ship free of any skilltree import).
+ * Every field defaults to its v1 constant, so an omitted bag reproduces v1
+ * behavior exactly.
+ */
+export interface ShipStats {
+  /** Maximum HP and starting HP. */
+  maxHp: number;
+  /** Steering rate in rad/s. */
+  turnRate: number;
+  /** Boost meter ceiling and starting charge. */
+  maxBoost: number;
+  /** Boost regeneration rate per second while not boosting. */
+  boostRegen: number;
+}
+
+/** v1-equivalent Ship stats (identity modifiers). */
+export const DEFAULT_SHIP_STATS: ShipStats = {
+  maxHp: SHIP_MAX_HP,
+  turnRate: TURN_RATE,
+  maxBoost: BOOST_MAX,
+  boostRegen: BOOST_REGEN_RATE,
+};
 
 // Trail tuning.
 const TRAIL_INTERVAL = 0.01; // seconds between emitted particles
@@ -71,10 +97,12 @@ export class Ship extends GameObject {
   private readonly timer: Timer;
   /** True when the Ship created its own Timer (so it must advance it). */
   private readonly ownsTimer: boolean;
+  /** Per-Run steering rate (rad/s); the resolved `turnRate` stat. */
+  private readonly turnRate: number;
 
   private velocity = 0;
-  private readonly boostState: BoostState = createBoostState();
-  private readonly healthState: HealthState = createHealthState();
+  private readonly boostState: BoostState;
+  private readonly healthState: HealthState;
   /** True on ticks where Boost was actually spent (drives visuals + trail color). */
   private boostingNow = false;
   /** Seconds the Ship has been alive; drives the invulnerability blink phase. */
@@ -93,11 +121,15 @@ export class Ship extends GameObject {
     x: number = PLAYFIELD_WIDTH / 2,
     y: number = PLAYFIELD_HEIGHT / 2,
     timer?: Timer,
+    stats: ShipStats = DEFAULT_SHIP_STATS,
   ) {
     super(x, y);
     this.input = input;
     this.ownsTimer = timer === undefined;
     this.timer = timer ?? new Timer();
+    this.turnRate = stats.turnRate;
+    this.boostState = createBoostState(stats.maxBoost, stats.boostRegen);
+    this.healthState = createHealthState(stats.maxHp);
     this.timer.every(TRAIL_INTERVAL, () => this.emitTrail(), Infinity, 'ship-trail');
   }
 
@@ -105,7 +137,7 @@ export class Ship extends GameObject {
   get boost(): BoostInfo {
     return {
       current: this.boostState.current,
-      max: BOOST_MAX,
+      max: this.boostState.max,
       canBoost: canBoost(this.boostState),
     };
   }
@@ -114,7 +146,7 @@ export class Ship extends GameObject {
   get health(): HealthInfo {
     return {
       current: this.healthState.current,
-      max: SHIP_MAX_HP,
+      max: this.healthState.max,
       invulnerable: isInvulnerable(this.healthState),
     };
   }
@@ -131,7 +163,7 @@ export class Ship extends GameObject {
 
   /** Add Boost to the meter, clamped to its max. Boost pickups call this. */
   addBoost(amount: number): void {
-    this.boostState.current = Math.min(BOOST_MAX, this.boostState.current + amount);
+    this.boostState.current = Math.min(this.boostState.max, this.boostState.current + amount);
   }
 
   /**
@@ -156,8 +188,8 @@ export class Ship extends GameObject {
   }
 
   private steer(dt: number): void {
-    if (this.input.isDown('ArrowLeft')) this.angle -= TURN_RATE * dt;
-    if (this.input.isDown('ArrowRight')) this.angle += TURN_RATE * dt;
+    if (this.input.isDown('ArrowLeft')) this.angle -= this.turnRate * dt;
+    if (this.input.isDown('ArrowRight')) this.angle += this.turnRate * dt;
   }
 
   private applyBoost(dt: number): void {

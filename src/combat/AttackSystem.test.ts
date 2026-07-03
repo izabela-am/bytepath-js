@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { Timer } from '../engine/timer';
 import { Area } from '../core/Area';
-import { AttackSystem, MAX_AMMO } from './AttackSystem';
-import { Projectile } from './Projectile';
+import { AttackSystem, MAX_AMMO, DEFAULT_ATTACK_STATS, type AttackStats } from './AttackSystem';
+import { Projectile, PROJECTILE_SPEED, PROJECTILE_DAMAGE } from './Projectile';
 import { ATTACKS } from './attacks';
 
 const SOURCE = { x: 100, y: 100, angle: 0 };
@@ -16,10 +16,10 @@ function advance(sys: AttackSystem, timer: Timer, total: number, steps: number):
   }
 }
 
-function setup(): { sys: AttackSystem; area: Area; timer: Timer } {
+function setup(stats?: AttackStats): { sys: AttackSystem; area: Area; timer: Timer } {
   const area = new Area();
   const timer = new Timer();
-  const sys = new AttackSystem(area, timer);
+  const sys = new AttackSystem(area, timer, stats);
   return { sys, area, timer };
 }
 
@@ -182,5 +182,66 @@ describe('projectile spawn specs', () => {
     // Heading 0 => muzzle is to the +x side of the source. After one tick the
     // projectile has also moved, but it must be ahead of the source, not behind.
     expect(p?.x).toBeGreaterThan(SOURCE.x);
+  });
+});
+
+describe('AttackSystem stat modifiers', () => {
+  it('the default stats reproduce v1 firing (identity => v1 behavior)', () => {
+    const { sys, area, timer } = setup(DEFAULT_ATTACK_STATS);
+    expect(sys.maxAmmo).toBe(MAX_AMMO);
+    expect(sys.ammo).toBe(MAX_AMMO);
+    // v1 cadence: 4 Neutral triggers in one second.
+    advance(sys, timer, ATTACKS.Neutral.fireInterval * 2 + 0.001, 8);
+    expect(projectiles(area).length).toBe(2);
+  });
+
+  it('an omitted stats bag is identical to DEFAULT_ATTACK_STATS', () => {
+    const bare = setup();
+    const explicit = setup(DEFAULT_ATTACK_STATS);
+    expect(bare.sys.maxAmmo).toBe(explicit.sys.maxAmmo);
+    expect(bare.sys.ammo).toBe(explicit.sys.ammo);
+  });
+
+  it('a raised maxAmmo increases the pool ceiling and starting Ammo', () => {
+    const { sys } = setup({ ...DEFAULT_ATTACK_STATS, maxAmmo: 150 });
+    expect(sys.maxAmmo).toBe(150);
+    expect(sys.ammo).toBe(150);
+    sys.addAmmo(100); // already at 150; clamps to the raised max, not MAX_AMMO.
+    expect(sys.ammo).toBe(150);
+  });
+
+  it('a fireRate above 1 fires more shots in the same window', () => {
+    // fireRate 2 halves Neutral's interval, so twice as many triggers come due.
+    const { sys, area, timer } = setup({ ...DEFAULT_ATTACK_STATS, fireRate: 2 });
+    advance(sys, timer, ATTACKS.Neutral.fireInterval * 2 + 0.001, 16);
+    // Identity would give 2 here; doubled cadence gives 4.
+    expect(projectiles(area).length).toBe(4);
+  });
+
+  it('threads projectileSpeed onto spawned projectiles', () => {
+    const fast = setup({ ...DEFAULT_ATTACK_STATS, projectileSpeed: PROJECTILE_SPEED * 2 });
+    const base = setup(DEFAULT_ATTACK_STATS);
+    // Fire one shot each; advance a single fine tick so both are still onscreen.
+    fast.sys.update(ATTACKS.Neutral.fireInterval, SOURCE);
+    base.sys.update(ATTACKS.Neutral.fireInterval, SOURCE);
+    const dt = 1 / 600;
+    fast.sys.update(dt, SOURCE);
+    base.sys.update(dt, SOURCE);
+    fast.area.update(dt);
+    base.area.update(dt);
+    // The faster projectile has travelled further along +x from the muzzle.
+    const [pf] = projectiles(fast.area);
+    const [pb] = projectiles(base.area);
+    expect(pf!.x).toBeGreaterThan(pb!.x);
+  });
+
+  it('threads projectileDamage onto spawned projectiles', () => {
+    const { sys, area, timer } = setup({
+      ...DEFAULT_ATTACK_STATS,
+      projectileDamage: PROJECTILE_DAMAGE * 2,
+    });
+    advance(sys, timer, ATTACKS.Neutral.fireInterval, 1);
+    const [p] = projectiles(area);
+    expect(p!.damage).toBe(PROJECTILE_DAMAGE * 2);
   });
 });

@@ -23,15 +23,25 @@ export const SHIP_MAX_HP = 100;
 export const SHIP_INVULN_DURATION = 0.5;
 
 export interface HealthState {
-  /** Current HP, 0..SHIP_MAX_HP. */
+  /** Current HP, 0..max. */
   current: number;
   /** Remaining invulnerability time in seconds; 0 when vulnerable. */
   invuln: number;
+  /** This Ship's HP ceiling and starting value. */
+  max: number;
 }
 
-/** Fresh, full-health state with no invulnerability. */
-export function createHealthState(): HealthState {
-  return { current: SHIP_MAX_HP, invuln: 0 };
+/**
+ * Fresh, full-health state with no invulnerability. `max` defaults to
+ * SHIP_MAX_HP so an argument-free call reproduces v1 behavior; the Ship passes
+ * the Skill-Tree-resolved `maxHp` when it differs. Damage/invuln rules are
+ * unaffected by `max` (they only floor at 0), so this is purely the ceiling and
+ * starting charge.
+ *
+ * @param max Starting and maximum HP (default SHIP_MAX_HP).
+ */
+export function createHealthState(max = SHIP_MAX_HP): HealthState {
+  return { current: max, invuln: 0, max };
 }
 
 /** Whether the Ship is currently invulnerable (in its post-hit window). */

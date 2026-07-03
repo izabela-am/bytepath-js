@@ -6,6 +6,9 @@ import { Rock } from '../enemies/Rock';
 import { Enemy } from '../enemies/Enemy';
 import { EnemyProjectile } from '../enemies/EnemyProjectile';
 import { AmmoPickup } from '../pickups/AmmoPickup';
+import { SpPickup } from '../pickups/SpPickup';
+import { identityModifiers, type RunModifiers } from '../skilltree/modifiers';
+import { SHIP_MAX_HP } from '../objects/ship/health';
 
 // A no-input keyboard so the Ship neither steers nor boosts during a test tick.
 function idleInput(): Input {
@@ -92,5 +95,103 @@ describe('Stage collision wiring', () => {
     for (let t = 0; t < 200 && restartedWith === null; t++) stage.update(DT);
     expect(restartedWith).not.toBeNull();
     expect(restartedWith!).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe('Stage SP accounting', () => {
+  it('collecting an SP pickup banks SP and awards its Score bonus', () => {
+    const stage = new Stage(idleInput());
+    const scoreBefore = stage.currentScore;
+    expect(stage.spEarned).toBe(0);
+
+    const pickup = new SpPickup(stage.ship.x, stage.ship.y);
+    stage.area.add(pickup);
+
+    stage.update(DT);
+
+    expect(pickup.dead).toBe(true);
+    // Identity modifiers: base 1 SP per pickup.
+    expect(stage.spEarned).toBe(1);
+    // SP pickups award a Score bonus like other pickups (PICKUP_BONUS.SP = 50).
+    expect(stage.currentScore).toBeGreaterThanOrEqual(scoreBefore + 50);
+  });
+
+  it('reports SP earned as the second onRestart argument', () => {
+    let restartScore: number | null = null;
+    let restartSp: number | null = null;
+    const stage = new Stage(idleInput(), {
+      onRestart: (finalScore, spEarned) => {
+        restartScore = finalScore;
+        restartSp = spEarned;
+      },
+    });
+
+    // Collect one SP pickup, then ram the Ship to death.
+    stage.area.add(new SpPickup(stage.ship.x, stage.ship.y));
+    stage.update(DT);
+    expect(stage.spEarned).toBe(1);
+
+    for (let i = 0; i < 20 && stage.isRunActive; i++) {
+      const rock = new Rock();
+      rock.x = stage.ship.x;
+      rock.y = stage.ship.y;
+      stage.area.add(rock);
+      for (let t = 0; t < 40; t++) stage.update(DT);
+    }
+    for (let t = 0; t < 200 && restartSp === null; t++) stage.update(DT);
+
+    expect(restartSp).toBe(1);
+    expect(restartScore!).toBeGreaterThanOrEqual(0);
+  });
+
+  it('scales SP banked per pickup by the spPickupValue modifier', () => {
+    // +150% => applyModifier(1, {percent:1.5}) = 2.5 => round => 3 SP per pickup.
+    const mods: RunModifiers = identityModifiers();
+    mods.spPickupValue = { flat: 0, percent: 1.5 };
+    const stage = new Stage(idleInput(), { runModifiers: mods });
+
+    stage.area.add(new SpPickup(stage.ship.x, stage.ship.y));
+    stage.update(DT);
+
+    expect(stage.spEarned).toBe(3);
+  });
+});
+
+describe('Stage modifier threading', () => {
+  it('identity modifiers leave the Ship at v1 max HP', () => {
+    const stage = new Stage(idleInput(), { runModifiers: identityModifiers() });
+    expect(stage.ship.health.max).toBe(SHIP_MAX_HP);
+  });
+
+  it('an omitted runModifiers option is identity (exact v1 behavior)', () => {
+    const stage = new Stage(idleInput());
+    expect(stage.ship.health.max).toBe(SHIP_MAX_HP);
+    expect(stage.ship.hp).toBe(SHIP_MAX_HP);
+  });
+
+  it('a non-identity maxHp modifier raises the Ship max HP', () => {
+    const mods: RunModifiers = identityModifiers();
+    mods.maxHp = { flat: 50, percent: 0 };
+    const stage = new Stage(idleInput(), { runModifiers: mods });
+    expect(stage.ship.health.max).toBe(SHIP_MAX_HP + 50);
+    expect(stage.ship.hp).toBe(SHIP_MAX_HP + 50);
+  });
+
+  it('a scoreMultiplier modifier scales kill Score', () => {
+    const mods: RunModifiers = identityModifiers();
+    mods.scoreMultiplier = { flat: 0, percent: 1 }; // x2
+    const stage = new Stage(idleInput(), { runModifiers: mods });
+
+    const rock = new Rock();
+    rock.x = 100;
+    rock.y = 100;
+    stage.area.add(rock);
+    stage.area.add(new Projectile(100, 100, { angle: 0, damage: 1000 }));
+
+    const before = stage.currentScore;
+    stage.update(DT);
+
+    // The kill awards double its scoreValue under the x2 multiplier.
+    expect(stage.currentScore - before).toBeGreaterThanOrEqual(rock.scoreValue * 2);
   });
 });

@@ -18,6 +18,24 @@ export const AMMO_PICKUP_AMOUNT = 5;
 /** How much Boost a Boost pickup grants. */
 export const BOOST_PICKUP_AMOUNT = 25;
 
+/** Base SP an SP pickup banks before the `spPickupValue` stat is applied. */
+export const SP_PICKUP_BASE_VALUE = 1;
+
+/**
+ * Resolve how much SP one SP pickup banks. The caller passes the already-applied
+ * effective value (`applyModifier(SP_PICKUP_BASE_VALUE, mods.spPickupValue)`),
+ * keeping this module free of any Skill Tree import — coupling stays
+ * one-directional (rooms depend on skilltree; pure modules stay standalone).
+ *
+ * SP is a whole-number currency, so the effective value is rounded to the
+ * nearest integer and floored at 0 (a modifier can never bank negative SP).
+ * With the identity modifier the effective value is `SP_PICKUP_BASE_VALUE`
+ * (1), so `resolveSpPickupValue(1)` is `1` — v1-equivalent behavior.
+ */
+export function resolveSpPickupValue(effectiveValue: number): number {
+  return Math.max(0, Math.round(effectiveValue));
+}
+
 /** The Attack kinds an Attack pickup may grant (never Neutral). */
 export const ATTACK_PICKUP_CHOICES: readonly AttackName[] = ['Double', 'Spread'];
 

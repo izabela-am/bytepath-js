@@ -44,4 +44,41 @@ describe('Score', () => {
     s.addSurvival(2); // 2 whole seconds => 2 survival points
     expect(s.value).toBe(100 + 150 + 2);
   });
+
+  it('awards the SP pickup bonus', () => {
+    const s = new Score();
+    s.addPickup('SP');
+    expect(s.value).toBe(PICKUP_BONUS.SP);
+  });
+});
+
+describe('Score scoreMultiplier', () => {
+  it('leaves every source unchanged at multiplier 1 (identity => v1 behavior)', () => {
+    const s = new Score(1);
+    s.addKill(100);
+    s.addPickup('Attack'); // 150
+    s.addSurvival(3); // 3 survival points
+    expect(s.value).toBe(100 + 150 + 3);
+  });
+
+  it('scales kills, pickups, and survival by a non-identity multiplier', () => {
+    const s = new Score(2);
+    s.addKill(100); // => 200
+    s.addPickup('Ammo'); // 50 => 100
+    s.addSurvival(4); // 4 => 8
+    expect(s.value).toBe(200 + 100 + 8);
+  });
+
+  it('rounds scaled discrete points to whole numbers', () => {
+    const s = new Score(1.5);
+    s.addKill(101); // 151.5 => 152
+    expect(s.value).toBe(152);
+  });
+
+  it('a smaller multiplier scales Score down', () => {
+    const s = new Score(0.5);
+    s.addKill(100); // => 50
+    s.addSurvival(10); // 10 * 0.5 = 5
+    expect(s.value).toBe(50 + 5);
+  });
 });

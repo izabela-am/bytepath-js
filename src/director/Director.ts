@@ -18,9 +18,12 @@
  *    at each difficulty increase.
  *
  *  - **Resource cadence.** Independently, every RESOURCE_INTERVAL seconds the
- *    Director decides one resource spawn, weighted Boost 60% / Attack 25% /
- *    Ammo 15%. (Ammo also drops from kills — that is the integrator's concern,
- *    not the Director's.)
+ *    Director decides one resource spawn, weighted Boost 45% / SP 20% /
+ *    Attack 20% / Ammo 15%. (Ammo also drops from kills — that is the
+ *    integrator's concern, not the Director's.) SP feeds the persistent Skill
+ *    Tree currency; at ~20% of a 16 s cadence it surfaces roughly one SP pickup
+ *    every ~80 s, matching the ADR 0003 pacing target of a first Node within
+ *    1–2 Runs.
  *
  * Determinism: all randomness flows through the injected `rand` (default
  * `Math.random`). Given the same `rand` sequence and the same `dt` feed, the
@@ -31,7 +34,7 @@
 export type EnemyName = 'Rock' | 'Shooter';
 
 /** Resource pickup kinds the Director knows how to request. */
-export type ResourceName = 'Ammo' | 'Boost' | 'Attack';
+export type ResourceName = 'Ammo' | 'Boost' | 'Attack' | 'SP';
 
 /** Seconds per difficulty round; difficulty +1 at each boundary. */
 export const ROUND_DURATION = 22;
@@ -58,10 +61,16 @@ export function roundBudget(difficulty: number): number {
 const SPAWN_MIN_INTERVAL = 0.8;
 const SPAWN_MAX_INTERVAL = 2.2;
 
-/** Weighted table for resource choice — order matters for the cumulative pick. */
+/**
+ * Weighted table for resource choice — order matters for the cumulative pick.
+ * Weights sum to 1: Boost 45% / SP 20% / Attack 20% / Ammo 15%. SP sits between
+ * Boost and Attack so a low roll still favors Boost (the most frequently spent
+ * resource) while SP appears often enough to feed Skill Tree progression.
+ */
 const RESOURCE_WEIGHTS: ReadonlyArray<{ name: ResourceName; weight: number }> = [
-  { name: 'Boost', weight: 0.6 },
-  { name: 'Attack', weight: 0.25 },
+  { name: 'Boost', weight: 0.45 },
+  { name: 'SP', weight: 0.2 },
+  { name: 'Attack', weight: 0.2 },
   { name: 'Ammo', weight: 0.15 },
 ];
 
