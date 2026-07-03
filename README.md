@@ -1,6 +1,6 @@
 # BYTEPATH-JS
 
-A browser arcade shooter in vanilla TypeScript + Canvas 2D — a port of [BYTEPATH](https://github.com/a327ex/BYTEPATH) by [a327ex](https://github.com/a327ex), originally built in Lua/LÖVE.
+A browser arcade shooter in vanilla TypeScript + Canvas 2D. A port of [BYTEPATH](https://github.com/a327ex/BYTEPATH) by [a327ex](https://github.com/a327ex), originally built in Lua/LÖVE.
 
 **▶ Play it now: [izabela-am.github.io/bytepath-js](https://izabela-am.github.io/bytepath-js/)**
 
@@ -27,7 +27,7 @@ Firing is automatic. Keyboard required — desktop only for now.
 
 ## Tech
 
-No game engine, no rendering library — by design. The visuals are pure geometry and the physics is circle-overlap collision, so the whole game runs on a hand-rolled fixed-timestep loop, timer/tween module, and a plain Canvas 2D context at an internal 480×270 resolution with pixelated upscale.
+No game engine, no rendering library. The visuals are pure geometry and the physics is circle-overlap collision, so the whole game runs on a hand-rolled fixed-timestep loop, timer/tween module, and a plain Canvas 2D context at an internal 480×270 resolution with pixelated upscale.
 
 - **TypeScript** (strict) + **Vite**
 - **Canvas 2D** rendering behind a swappable draw boundary
