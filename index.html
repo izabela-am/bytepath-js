@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>BYTEPATH-JS</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: #050505;
+        overflow: hidden;
+      }
+      #app {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #game {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+        background: #111111;
+        display: block;
+      }
+      #no-keyboard {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: #050505;
+        color: #d0d0d0;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 1rem;
+        line-height: 1.5;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game"></canvas>
+    </div>
+    <div id="no-keyboard">
+      <p>
+        BYTEPATH-JS needs a physical keyboard to steer, boost, and fire.<br />
+        Please open this on a desktop or laptop.
+      </p>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "bytepath-js",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser arcade shooter in TypeScript — a port of BYTEPATH (a327ex's LÖVE tutorial).",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10",
+    "vitest": "^2.1.4"
+  }
+}
