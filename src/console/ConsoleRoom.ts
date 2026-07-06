@@ -34,7 +34,6 @@ export interface RunResults {
   spEarnedLastRun: number | null;
 }
 
-/** Everything the ConsoleRoom needs to run — all side effects injected. */
 export interface ConsoleDeps {
   input: Input;
   tree: SkillTree;
@@ -52,7 +51,6 @@ export interface ConsoleDeps {
   /** Read/toggle sound; wired to the shared Sfx mute (persisted by the owner). */
   getSoundOn(): boolean;
   toggleSound(): boolean;
-  /** Run results to show on the menu. */
   results: RunResults;
   /** Skip the boot animation and open straight on the menu (used after a Run). */
   skipBoot?: boolean;
@@ -66,7 +64,6 @@ const CAMERA_TWEEN = 0.18;
 /** Pixels per tree-coordinate unit when laying the tree out on screen. */
 const TREE_SCALE = 46;
 
-/** Node circle radius on screen. */
 const NODE_RADIUS = 7;
 
 export class ConsoleRoom implements Room {
@@ -77,7 +74,6 @@ export class ConsoleRoom implements Room {
   private readonly boot = new BootSequence();
   private readonly menu = new MenuState();
 
-  /** Tree screen: the selected Node id and a camera the arrow keys pan. */
   private cursorId: string;
   private readonly camera = { x: 0, y: 0 };
 
@@ -113,16 +109,11 @@ export class ConsoleRoom implements Room {
     }
   }
 
-  // --- Boot screen ---------------------------------------------------------
-
   private updateBoot(dt: number): void {
     this.boot.update(dt);
-    // Any key skips to (or reveals) the menu.
     if (this.anyKeyPressed()) this.boot.skip();
     if (this.boot.done) this.screen = 'menu';
   }
-
-  // --- Menu screen ---------------------------------------------------------
 
   private updateMenu(): void {
     const input = this.deps.input;
@@ -157,12 +148,9 @@ export class ConsoleRoom implements Room {
 
   private openTree(): void {
     this.screen = 'tree';
-    // Start the cursor on the root each time the tree is opened.
     this.cursorId = this.deps.tree.root;
     this.centerCameraOn(this.cursorId, true);
   }
-
-  // --- Tree screen ---------------------------------------------------------
 
   private updateTree(): void {
     const input = this.deps.input;
@@ -195,7 +183,6 @@ export class ConsoleRoom implements Room {
     this.deps.setSave(buy(save, this.deps.tree, id));
   }
 
-  /** The arrow direction pressed this frame, or null. */
   private pressedDirection(): CursorDirection | null {
     const input = this.deps.input;
     if (input.pressed('ArrowUp')) return 'up';
@@ -205,7 +192,6 @@ export class ConsoleRoom implements Room {
     return null;
   }
 
-  /** Pan the camera so the given Node sits at the screen center. */
   private centerCameraOn(id: string, snap: boolean): void {
     const node = this.nodeById(id);
     if (!node) return;
@@ -224,8 +210,6 @@ export class ConsoleRoom implements Room {
     return this.deps.tree.nodes.find((n) => n.id === id);
   }
 
-  // --- Input helpers -------------------------------------------------------
-
   private anyKeyPressed(): boolean {
     const input = this.deps.input;
     return (
@@ -239,8 +223,6 @@ export class ConsoleRoom implements Room {
       input.pressed('KeyM')
     );
   }
-
-  // --- Rendering (the only place this Room touches the canvas) -------------
 
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.fillStyle = Palette.background;
@@ -274,7 +256,6 @@ export class ConsoleRoom implements Room {
       y += 12;
     }
     if (view.currentLine) {
-      // Blinking cursor block trails the line currently typing.
       const blink = Math.floor(this.pulse * 3) % 2 === 0;
       ctx.fillText(view.currentLine + (blink ? '_' : ''), 12, y);
     }
@@ -283,7 +264,6 @@ export class ConsoleRoom implements Room {
   private drawMenu(ctx: CanvasRenderingContext2D): void {
     const save = this.deps.getSave();
 
-    // Header + SP bank.
     ctx.fillStyle = Palette.default;
     ctx.textAlign = 'left';
     ctx.fillText('BYTEPATH', 12, 22);
@@ -291,7 +271,6 @@ export class ConsoleRoom implements Room {
     ctx.textAlign = 'right';
     ctx.fillText(`SP ${save.sp}`, PLAYFIELD_WIDTH - 12, 22);
 
-    // Menu entries.
     const labels = this.menuLabels();
     ctx.textAlign = 'left';
     let y = 90;
@@ -303,7 +282,6 @@ export class ConsoleRoom implements Room {
       y += 16;
     }
 
-    // Run results block (bottom-left).
     this.drawResults(ctx);
   }
 
@@ -360,7 +338,6 @@ export class ConsoleRoom implements Room {
       }
     }
 
-    // Nodes.
     const pulseT = 0.5 + 0.5 * Math.sin(this.pulse * 5);
     for (const node of tree.nodes) {
       const { sx, sy } = toScreen(node.x, node.y);
@@ -371,19 +348,16 @@ export class ConsoleRoom implements Room {
       ctx.beginPath();
       ctx.arc(sx, sy, NODE_RADIUS, 0, Math.PI * 2);
       if (owned) {
-        // Bright + filled.
         ctx.fillStyle = Palette.sp;
         ctx.fill();
         ctx.strokeStyle = Palette.default;
         ctx.stroke();
       } else if (affordable) {
-        // Pulsing outline between dim and bright.
         ctx.strokeStyle = pulseT > 0.5 ? Palette.sp : Palette.defaultDim;
         ctx.lineWidth = 2;
         ctx.stroke();
         ctx.lineWidth = 1;
       } else if (purchasable) {
-        // Reachable but unaffordable: normal dim.
         ctx.strokeStyle = Palette.defaultDim;
         ctx.stroke();
       } else {
@@ -393,7 +367,6 @@ export class ConsoleRoom implements Room {
       }
     }
 
-    // Selection cursor: a blinking ring around the selected Node.
     const sel = this.nodeById(this.cursorId);
     if (sel) {
       const { sx, sy } = toScreen(sel.x, sel.y);
@@ -406,7 +379,6 @@ export class ConsoleRoom implements Room {
       }
     }
 
-    // Top strip: SP bank.
     ctx.fillStyle = Palette.sp;
     ctx.textAlign = 'right';
     ctx.fillText(`SP ${save.sp}`, PLAYFIELD_WIDTH - 12, 16);
@@ -414,7 +386,6 @@ export class ConsoleRoom implements Room {
     ctx.textAlign = 'left';
     ctx.fillText('SKILL TREE', 12, 16);
 
-    // Bottom info strip for the selected Node.
     this.drawNodeInfo(ctx, save);
   }
 
@@ -431,11 +402,9 @@ export class ConsoleRoom implements Room {
     ctx.fillStyle = Palette.default;
     ctx.fillText(node.label.toUpperCase(), 12, y);
 
-    // Effect summary.
     ctx.fillStyle = Palette.defaultDim;
     ctx.fillText(this.effectSummary(node), 12, y + 11);
 
-    // Status / cost, right-aligned.
     ctx.textAlign = 'right';
     let status: string;
     let color: string;

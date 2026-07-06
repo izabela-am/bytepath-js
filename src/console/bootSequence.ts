@@ -10,7 +10,6 @@
  * the menu without replaying the boot, so this only runs once per page load.
  */
 
-/** The lines the boot screen types out, in order. Purely cosmetic flavor text. */
 export const BOOT_LINES: readonly string[] = [
   'BYTEPATH OS v2.0',
   'MEM CHECK ... 640K OK',
@@ -27,13 +26,10 @@ export const CHAR_INTERVAL = 0.028;
 /** Extra pause (seconds) held at the end of each completed line. */
 export const LINE_PAUSE = 0.18;
 
-/** A snapshot of what the boot screen should render this frame. */
 export interface BootView {
-  /** Fully-typed lines above the one currently typing. */
   completedLines: readonly string[];
   /** The partially-revealed current line (empty once every line is done). */
   currentLine: string;
-  /** True once the whole sequence has finished typing (or was skipped). */
   done: boolean;
 }
 
@@ -50,12 +46,10 @@ export class BootSequence {
   private lineHold = 0;
   private finished = false;
 
-  /** True once every line is typed (or `skip()` was called). */
   get done(): boolean {
     return this.finished;
   }
 
-  /** Advance the reveal by `dt` seconds. No-op once done. */
   update(dt: number): void {
     if (this.finished) return;
     this.elapsed += dt;
@@ -90,12 +84,10 @@ export class BootSequence {
     }
   }
 
-  /** Jump straight to the finished state (any-key skip). */
   skip(): void {
     this.finished = true;
   }
 
-  /** What to render this frame. */
   view(): BootView {
     if (this.finished) {
       return { completedLines: BOOT_LINES, currentLine: '', done: true };

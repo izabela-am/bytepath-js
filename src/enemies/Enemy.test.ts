@@ -5,7 +5,6 @@ import { Shooter, SHOOTER_SCORE, SHOOTER_HP } from './Shooter';
 import { EnemyProjectile, ENEMY_PROJECTILE_DAMAGE } from './EnemyProjectile';
 import { PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT } from '../game/constants';
 
-/** Minimal concrete Enemy for exercising the shared base rules in isolation. */
 class TestEnemy extends Enemy {
   deaths = 0;
   constructor(hp = ENEMY_DEFAULT_HP) {

@@ -23,10 +23,7 @@ export class Sfx {
   /** Master volume when unmuted (kept modest so effects don't clip). */
   private static readonly MASTER_VOLUME = 0.25;
 
-  /**
-   * Create/resume the AudioContext. Call from a user-gesture handler (keydown).
-   * Safe to call repeatedly.
-   */
+  /** Call from a user-gesture handler (keydown). Safe to call repeatedly. */
   resume(): void {
     if (!this.ctx) {
       const Ctor: typeof AudioContext | undefined =
@@ -41,7 +38,7 @@ export class Sfx {
     if (this.ctx.state === 'suspended') void this.ctx.resume();
   }
 
-  /** Toggle mute. Returns the new muted state. */
+  /** Returns the new muted state. */
   toggleMute(): boolean {
     this.muted = !this.muted;
     if (this.master) this.master.gain.value = this.muted ? 0 : Sfx.MASTER_VOLUME;
@@ -52,41 +49,37 @@ export class Sfx {
     return this.muted;
   }
 
-  // --- Effect voices -------------------------------------------------------
-
-  /** Ship fires a shot: short high blip. */
+  /** Short high blip. */
   fire(): void {
     this.tone({ type: 'square', startFreq: 660, endFreq: 440, duration: 0.08, gain: 0.5 });
   }
 
-  /** A projectile lands on an enemy: tight click. */
+  /** Tight click. */
   enemyHit(): void {
     this.tone({ type: 'square', startFreq: 320, endFreq: 220, duration: 0.06, gain: 0.4 });
   }
 
-  /** An enemy is destroyed: descending burst plus a noise puff. */
+  /** Descending burst plus a noise puff. */
   enemyDeath(): void {
     this.tone({ type: 'sawtooth', startFreq: 300, endFreq: 80, duration: 0.22, gain: 0.5 });
     this.noise({ kind: 'white', duration: 0.18, gain: 0.3 });
   }
 
-  /** The Ship takes damage: harsh low buzz. */
+  /** Harsh low buzz. */
   shipHit(): void {
     this.tone({ type: 'sawtooth', startFreq: 200, endFreq: 60, duration: 0.2, gain: 0.6 });
   }
 
-  /** A Pickup is collected: bright rising chime. */
+  /** Bright rising chime. */
   pickup(): void {
     this.tone({ type: 'triangle', startFreq: 520, endFreq: 880, duration: 0.14, gain: 0.5 });
   }
 
-  /** The Ship dies: long descending noise + tone crash. */
+  /** Long descending noise + tone crash. */
   shipDeath(): void {
     this.tone({ type: 'sawtooth', startFreq: 220, endFreq: 40, duration: 0.6, gain: 0.6 });
     this.noise({ kind: 'white', duration: 0.5, gain: 0.4 });
   }
-
-  // --- Synthesis primitives ------------------------------------------------
 
   private tone(opts: {
     type: OscillatorType;

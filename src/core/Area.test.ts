@@ -2,16 +2,14 @@ import { describe, it, expect } from 'vitest';
 import { Area } from './Area';
 import { GameObject } from './GameObject';
 
-// Minimal concrete GameObjects for testing. draw() is a no-op — no canvas in
-// unit tests, matching the "rules-adjacent only" test policy.
+// draw() is a no-op — no canvas in unit tests, matching the "rules-adjacent
+// only" test policy.
 class Dummy extends GameObject {
   updates = 0;
   update(): void {
     this.updates += 1;
   }
-  draw(): void {
-    /* no-op */
-  }
+  draw(): void {}
 }
 
 class Alpha extends Dummy {}

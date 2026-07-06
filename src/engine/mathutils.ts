@@ -5,14 +5,13 @@
 
 export const TWO_PI = Math.PI * 2;
 
-/** Clamp `value` into the inclusive range [min, max]. */
 export function clamp(value: number, min: number, max: number): number {
   if (value < min) return min;
   if (value > max) return max;
   return value;
 }
 
-/** Linear interpolation between `a` and `b` by `t` (t is not clamped). */
+/** `t` is not clamped. */
 export function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
@@ -31,7 +30,6 @@ export function randomInt(min: number, max: number): number {
   return Math.floor(min + Math.random() * (max - min + 1));
 }
 
-/** Return a random element of a non-empty array. */
 export function randomChoice<T>(items: readonly T[]): T {
   if (items.length === 0) {
     throw new Error('randomChoice: empty array');
@@ -39,19 +37,16 @@ export function randomChoice<T>(items: readonly T[]): T {
   return items[randomInt(0, items.length - 1)] as T;
 }
 
-/** Euclidean distance between two points. */
 export function distance(x1: number, y1: number, x2: number, y2: number): number {
   const dx = x2 - x1;
   const dy = y2 - y1;
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-/** Angle in radians from point 1 to point 2 (atan2 convention). */
 export function angle(x1: number, y1: number, x2: number, y2: number): number {
   return Math.atan2(y2 - y1, x2 - x1);
 }
 
-/** Unit vector for an angle in radians, scaled by `magnitude` (default 1). */
 export function vectorFromAngle(radians: number, magnitude = 1): { x: number; y: number } {
   return { x: Math.cos(radians) * magnitude, y: Math.sin(radians) * magnitude };
 }

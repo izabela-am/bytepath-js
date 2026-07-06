@@ -6,10 +6,6 @@
  * playing a sound) lives in the Stage, matching the Area contract where objects
  * report overlaps and rooms resolve them.
  *
- * Each Pickup exposes its `kind` (for the Stage's collect switch and Score) and
- * draws a small line-drawn geometric glyph in its resource color. Concrete
- * pickups override `drawGlyph` for their shape.
- *
  * Rendering rule (ADR 0001): only `draw` touches the canvas.
  */
 import { GameObject } from '../core/GameObject';

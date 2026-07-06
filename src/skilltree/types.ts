@@ -63,11 +63,9 @@ export interface NodeDef {
   effects: Effect[];
   x: number;
   y: number;
-  /** Ids of Nodes directly connected to this one. */
   edges: string[];
 }
 
-/** A whole Skill Tree: a set of Nodes and the id of the implicitly-owned root. */
 export interface SkillTree {
   root: string;
   nodes: NodeDef[];

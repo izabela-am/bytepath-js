@@ -1,8 +1,6 @@
 /**
- * Canvas-free orchestrator for the Ship's firing. Owns the current Attack and
- * the Ammo pool, auto-fires on the Attack's cadence, spends Ammo per trigger,
- * and reverts to Neutral when Ammo runs short (CONTEXT.md: "Running out forces
- * the Attack back to Neutral").
+ * Reverts to Neutral when Ammo runs short (CONTEXT.md: "Running out forces the
+ * Attack back to Neutral").
  *
  * The integrator constructs one of these with the Stage's Area and Timer and
  * calls `update(dt, source)` each tick with the Ship's position and heading.
@@ -27,7 +25,6 @@ export const MAX_AMMO = 100;
 /** Distance (px) in front of the source that projectiles spawn from. */
 export const MUZZLE_OFFSET = 12;
 
-/** Position and heading of whatever is firing (the Ship). */
 export interface FireSource {
   x: number;
   y: number;
@@ -44,9 +41,8 @@ export interface FireSource {
 export interface AttackStats {
   /** Maximum Ammo pool size and starting Ammo. */
   maxAmmo: number;
-  /** Projectile travel speed in px/s. */
+  /** In px/s. */
   projectileSpeed: number;
-  /** Projectile damage per hit. */
   projectileDamage: number;
   /**
    * Shots-per-second multiplier. The Attack's base `fireInterval` is divided by
@@ -82,22 +78,18 @@ export class AttackSystem {
     this.cycle = this.fireInterval();
   }
 
-  /** The current Attack's cadence after the `fireRate` multiplier. */
   private fireInterval(): number {
     return this.attack.fireInterval / this.stats.fireRate;
   }
 
-  /** The current Attack (starts Neutral). */
   get currentAttack(): Attack {
     return this.attack;
   }
 
-  /** Convenience accessor for the current Attack's name. */
   get currentAttackName(): AttackName {
     return this.attack.name;
   }
 
-  /** Current Ammo (0..maxAmmo). */
   get ammo(): number {
     return this.ammoValue;
   }
@@ -107,11 +99,6 @@ export class AttackSystem {
     return this.stats.maxAmmo;
   }
 
-  /**
-   * Advance the firing cadence. When the cycle elapses, fire from a muzzle in
-   * front of `source`, spending the Attack's Ammo cost. If Ammo is insufficient
-   * for the shot, revert to Neutral and fire that (free) shot instead.
-   */
   update(dt: number, source: FireSource): void {
     this.cycle -= dt;
     // Catch up on any triggers owed within this dt (mirrors Timer.every).
@@ -121,16 +108,12 @@ export class AttackSystem {
     }
   }
 
-  /**
-   * Replace the current Attack (Attack pickups call this) and reset the cycle so
-   * the new Attack's cadence starts cleanly.
-   */
+  /** Resets the cycle so the new Attack's cadence starts cleanly. */
   setAttack(name: AttackName): void {
     this.attack = ATTACKS[name];
     this.cycle = this.fireInterval();
   }
 
-  /** Add Ammo, clamped to [0, maxAmmo]. Ammo pickups call this. */
   addAmmo(n: number): void {
     this.ammoValue = clamp(this.ammoValue + n, 0, this.stats.maxAmmo);
   }

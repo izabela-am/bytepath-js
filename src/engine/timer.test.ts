@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { Timer, Easing } from './timer';
 
-/** Advance a timer by `total` seconds in `steps` equal ticks. */
 function advance(timer: Timer, total: number, steps: number): void {
   const dt = total / steps;
   for (let i = 0; i < steps; i += 1) timer.update(dt);

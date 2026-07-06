@@ -51,7 +51,7 @@ describe('BootSequence', () => {
 
   it('skip() jumps straight to done', () => {
     const seq = new BootSequence();
-    seq.update(CHAR_INTERVAL); // partway through
+    seq.update(CHAR_INTERVAL);
     seq.skip();
     expect(seq.done).toBe(true);
     expect(seq.view().completedLines).toEqual(BOOT_LINES);
@@ -60,7 +60,7 @@ describe('BootSequence', () => {
   it('is a no-op once done', () => {
     const seq = new BootSequence();
     seq.skip();
-    seq.update(10); // should not throw or change anything
+    seq.update(10);
     expect(seq.done).toBe(true);
     expect(seq.view().completedLines).toEqual(BOOT_LINES);
   });

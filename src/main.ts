@@ -109,7 +109,6 @@ function main(): void {
   // The prefs sound flag is the source of truth on load; sync the shared Sfx to it.
   if (!prefs.sound !== sfx.isMuted) sfx.toggleMute();
 
-  // Results shown on the Console menu; updated when a Run ends.
   const results: RunResults = {
     lastRunScore: null,
     bestScore: save.bestScore,
@@ -176,7 +175,6 @@ function main(): void {
     );
   };
 
-  // Boot into the Console (not a Stage).
   enterConsole(false);
 
   // Audio can't start without a user gesture; resume on the first key and toggle

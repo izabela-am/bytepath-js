@@ -1,10 +1,6 @@
 /**
- * A small geometric explosion: a burst of short line shards flung outward from a
- * point, fading as they fly. Ported in spirit from the tutorial's line-based
- * explosion particles. Used on enemy death and, larger, on Ship death.
- *
- * Purely cosmetic. Advances on the fixed dt like everything else; removes itself
- * once every shard has faded. Only `draw` touches the canvas.
+ * Ported in spirit from the tutorial's line-based explosion particles. Used on
+ * enemy death and, larger, on Ship death.
  */
 import { GameObject } from '../core/GameObject';
 import { TWO_PI, randomRange, vectorFromAngle } from '../engine/mathutils';
@@ -15,20 +11,17 @@ interface Shard {
   y: number;
   vx: number;
   vy: number;
-  /** Rendered length of the shard. */
   length: number;
   angle: number;
 }
 
 export interface ExplosionOptions {
-  /** Number of line shards. */
   count?: number;
-  /** Shard color. Defaults to the neutral geometry color. */
   color?: PaletteColor;
   /** Speed range for shards, px/s. */
   minSpeed?: number;
   maxSpeed?: number;
-  /** Seconds the explosion takes to fully fade. */
+  /** Seconds. */
   lifetime?: number;
 }
 

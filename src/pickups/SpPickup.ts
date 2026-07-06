@@ -1,10 +1,8 @@
 /**
- * SP pickup — banks SP toward the persistent Skill Tree currency when collected
- * (CONTEXT.md: "Appears in play as an SP Pickup spawned by the Director; whatever
- * the Ship collects during a Run is banked in full when the Run ends"). Drawn as
- * a small hexagon in the SP color so it reads distinctly from the square (Ammo),
- * diamond (Boost), and triangle (Attack) glyphs. The Stage banks the SP and plays
- * the collect effect.
+ * Banks SP toward the persistent Skill Tree currency when collected (CONTEXT.md:
+ * "whatever the Ship collects during a Run is banked in full when the Run ends").
+ * Drawn as a hexagon so it reads distinctly from the square (Ammo), diamond
+ * (Boost), and triangle (Attack) glyphs.
  */
 import { Pickup } from './Pickup';
 import { Palette, type PaletteColor } from '../game/palette';

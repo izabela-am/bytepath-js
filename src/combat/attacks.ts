@@ -1,34 +1,22 @@
 /**
- * The Attack table. The Ship has exactly one Attack at a time (CONTEXT.md);
- * collecting an Attack pickup replaces it. Each entry describes how firing
- * behaves: how much Ammo a shot costs, how often it fires, what projectiles it
- * spawns, and the color those projectiles draw in.
+ * The Ship has exactly one Attack at a time (CONTEXT.md); collecting an Attack
+ * pickup replaces it.
  *
  * Ported from a327ex's BYTEPATH tutorial "attacks" table. Values follow the
  * tutorial's spirit; deviations are noted inline.
  */
 import { Palette, type PaletteColor } from '../game/palette';
 
-/** Name of an Attack. Also the key used by AttackSystem.setAttack. */
 export type AttackName = 'Neutral' | 'Double' | 'Spread';
 
-/**
- * How a single trigger of an Attack lays out its projectiles. Each entry in
- * `shots` becomes one Projectile, fired relative to the source's heading.
- */
 export interface ProjectileSpawnSpec {
-  /**
-   * One shot per entry. `angleOffset` (radians) is added to the source heading;
-   * `randomSpreadHalfAngle` (radians, optional) additionally jitters the shot by
-   * a uniform value in [-half, +half].
-   */
   readonly shots: readonly ShotSpec[];
 }
 
 export interface ShotSpec {
-  /** Fixed angle offset from the source heading, in radians. */
+  /** Added to the source heading, in radians. */
   readonly angleOffset: number;
-  /** Optional half-angle (radians) of uniform random spread around the shot. */
+  /** Half-angle (radians) of uniform random spread around the shot. */
   readonly randomSpreadHalfAngle?: number;
 }
 
@@ -38,9 +26,7 @@ export interface Attack {
   readonly ammoCost: number;
   /** Seconds between automatic triggers. */
   readonly fireInterval: number;
-  /** Projectile layout for one trigger. */
   readonly spawn: ProjectileSpawnSpec;
-  /** Color the projectiles draw in. */
   readonly color: PaletteColor;
 }
 
@@ -60,8 +46,7 @@ export const ATTACKS: Record<AttackName, Attack> = {
     color: Palette.default,
   },
 
-  // Two projectiles fanned symmetrically at +/-12 degrees. Costs 2 Ammo per
-  // trigger (the brief calls it "2/shot"; a trigger fires the pair).
+  // Costs 2 Ammo per trigger (the brief calls it "2/shot"; a trigger fires the pair).
   Double: {
     name: 'Double',
     ammoCost: 2,
@@ -72,9 +57,8 @@ export const ATTACKS: Record<AttackName, Attack> = {
     color: Palette.boost,
   },
 
-  // Single projectile fired at a random angle within +/-16 degrees. Costs 1
-  // Ammo per trigger. Faster 0.16 s cadence, following the tutorial's spirit of
-  // Spread being a rapid, scattered attack.
+  // Faster 0.16 s cadence, following the tutorial's spirit of Spread being a
+  // rapid, scattered attack.
   Spread: {
     name: 'Spread',
     ammoCost: 1,

@@ -9,7 +9,6 @@ import {
   BOOST_COOLDOWN,
 } from './boost';
 
-/** Advance the state by `total` seconds in `steps` equal ticks. */
 function advance(state: ReturnType<typeof createBoostState>, total: number, steps: number, requesting: boolean): void {
   const dt = total / steps;
   for (let i = 0; i < steps; i += 1) updateBoost(state, dt, requesting);

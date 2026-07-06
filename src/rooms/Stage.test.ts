@@ -28,7 +28,6 @@ describe('Stage collision wiring', () => {
     const stage = new Stage(idleInput());
     const scoreBefore = stage.currentScore;
 
-    // Place a Rock and a lethal Projectile right on top of it.
     const rock = new Rock();
     rock.x = 100;
     rock.y = 100;
@@ -40,7 +39,6 @@ describe('Stage collision wiring', () => {
     expect(rock.dead).toBe(true);
     // Score jumped by at least the Rock's value (plus a little survival).
     expect(stage.currentScore).toBeGreaterThanOrEqual(scoreBefore + rock.scoreValue);
-    // No live enemies remain from this collision.
     expect(stage.area.getGameObjectsByClass(Enemy).length).toBe(0);
   });
 
@@ -126,7 +124,6 @@ describe('Stage SP accounting', () => {
       },
     });
 
-    // Collect one SP pickup, then ram the Ship to death.
     stage.area.add(new SpPickup(stage.ship.x, stage.ship.y));
     stage.update(DT);
     expect(stage.spEarned).toBe(1);
@@ -191,7 +188,6 @@ describe('Stage modifier threading', () => {
     const before = stage.currentScore;
     stage.update(DT);
 
-    // The kill awards double its scoreValue under the x2 multiplier.
     expect(stage.currentScore - before).toBeGreaterThanOrEqual(rock.scoreValue * 2);
   });
 });

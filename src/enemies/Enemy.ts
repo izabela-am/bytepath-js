@@ -32,10 +32,8 @@ export const ENEMY_HIT_FLASH_DURATION = 0.06;
 export const ENEMY_OFFSCREEN_MARGIN = 24;
 
 export abstract class Enemy extends GameObject {
-  /** Current hit points. Reaches 0 => the enemy dies. */
   hp: number;
 
-  /** Score awarded to the Run when this enemy is destroyed. */
   readonly scoreValue: number;
 
   /**
@@ -51,11 +49,6 @@ export abstract class Enemy extends GameObject {
     this.scoreValue = scoreValue;
   }
 
-  /**
-   * Apply `amount` damage. Triggers the hit-flash and, if HP drops to 0 or
-   * below, kills the enemy (marks it dead and runs the death hook once).
-   * Damage on an already-dead enemy is ignored.
-   */
   takeDamage(amount: number): void {
     if (this.dead) return;
     this.hp -= amount;
@@ -66,21 +59,18 @@ export abstract class Enemy extends GameObject {
     }
   }
 
-  /** Whether the enemy is currently rendering its hit-flash. */
   get flashing(): boolean {
     return this.flashTimer > 0;
   }
 
   /**
-   * Death hook. Marks the enemy dead so the Area culls it. Override to spawn
-   * death particles / Ammo drops, then call `super.die()`. Idempotent because
-   * `destroy()` is idempotent.
+   * Death hook. Override to spawn death particles / Ammo drops, then call
+   * `super.die()`. Idempotent because `destroy()` is idempotent.
    */
   protected die(): void {
     this.destroy();
   }
 
-  /** Advance the hit-flash timer. Subclasses call this from their `update`. */
   protected tickFlash(dt: number): void {
     if (this.flashTimer > 0) {
       this.flashTimer -= dt;
@@ -89,9 +79,8 @@ export abstract class Enemy extends GameObject {
   }
 
   /**
-   * True once the enemy has drifted fully off the playfield (past the given
-   * margin on any edge). Concrete enemies use this to self-destruct after
-   * crossing, rather than piling up out of view.
+   * Concrete enemies use this to self-destruct after crossing the playfield,
+   * rather than piling up out of view.
    */
   protected isOffPlayfield(margin: number = ENEMY_OFFSCREEN_MARGIN): boolean {
     return (
@@ -103,14 +92,9 @@ export abstract class Enemy extends GameObject {
   }
 }
 
-/** The four edges an enemy can drift in from. */
 export type SpawnEdge = 'left' | 'right' | 'top' | 'bottom';
 
 /**
- * Pick a point just outside `edge`, at a random offset along that edge, using
- * the given random pickers. Concrete enemies spawn here so they start off-screen
- * and drift in. `spawnMargin` is how far outside the edge to place the point.
- *
  * `randRange(min, max)` must return a uniform float in [min, max); this keeps
  * spawn placement injectable/testable and independent of `Math.random`.
  */

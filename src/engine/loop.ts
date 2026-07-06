@@ -12,9 +12,8 @@ export const FIXED_DT = 1 / 60;
 const MAX_FRAME_DELTA = 0.25; // seconds; cap catch-up after a stall
 
 export interface LoopCallbacks {
-  /** Advance game state by a fixed `dt` (always FIXED_DT). */
   update(dt: number): void;
-  /** Draw the current state. `alpha` is the 0..1 blend into the next tick. */
+  /** `alpha` is the 0..1 blend into the next tick. */
   render(alpha: number): void;
 }
 

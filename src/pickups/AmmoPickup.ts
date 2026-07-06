@@ -1,8 +1,4 @@
-/**
- * Ammo pickup — grants Ammo when collected (CONTEXT.md: "Replenished by
- * collecting Ammo pickups dropped in play"). Drawn as a small square in the Ammo
- * color. Also drops from enemy kills; the Stage handles the collect effect.
- */
+/** Also drops from enemy kills; the Stage handles the collect effect. */
 import { Pickup } from './Pickup';
 import { Palette, type PaletteColor } from '../game/palette';
 import type { PickupKind } from '../score/Score';

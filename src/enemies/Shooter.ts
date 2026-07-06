@@ -1,16 +1,11 @@
 /**
- * Shooter — an enemy that drifts slowly on a roughly horizontal course and
- * periodically fires an EnemyProjectile at a supplied target (the Ship). Between
- * shots it briefly flashes a pre-fire telegraph so the player can read the
- * incoming shot, then spawns the projectile aimed at the target's position at
- * fire time.
+ * Between shots the Shooter briefly flashes a pre-fire telegraph so the player
+ * can read the incoming shot, then spawns the projectile aimed at the target's
+ * position at fire time.
  *
  * The target is injected as a `getTarget` callback so this file stays decoupled
  * from the Ship: the integrator passes `() => ship` (or `null` when there's no
  * live Ship). If the target is null at fire time, the Shooter holds fire.
- *
- * Visual: a line-drawn diamond/triangle in the HP hue, flashing white on hit or
- * during the pre-fire telegraph.
  */
 import { Enemy } from './Enemy';
 import { spawnPointOnEdge, type SpawnEdge } from './Enemy';
@@ -36,10 +31,9 @@ export const SHOOTER_MAX_SPEED = 30;
 export const SHOOTER_MIN_FIRE_INTERVAL = 1.5;
 export const SHOOTER_MAX_FIRE_INTERVAL = 2.5;
 
-/** How long the pre-fire telegraph flashes before the projectile launches. */
+/** Seconds. */
 export const SHOOTER_TELEGRAPH_DURATION = 0.25;
 
-/** A point the Shooter can aim at, or null when no target is available. */
 export type TargetPoint = { x: number; y: number } | null;
 
 export class Shooter extends Enemy {
@@ -48,15 +42,9 @@ export class Shooter extends Enemy {
   private readonly timer = new Timer();
   private readonly getTarget: () => TargetPoint;
 
-  /** True while the pre-fire telegraph is showing (drives the flash). */
   private telegraphing = false;
 
-  /**
-   * @param getTarget callback returning the current aim point (e.g. the Ship),
-   *                  or null to hold fire this shot.
-   */
   constructor(getTarget: () => TargetPoint) {
-    // Spawn off the left or right edge and drift across roughly horizontally.
     const edge = randomChoice<SpawnEdge>(['left', 'right']);
     const { x, y } = spawnPointOnEdge(edge, randomRange);
     super(x, y, SHOOTER_SCORE, SHOOTER_HP);
@@ -77,7 +65,6 @@ export class Shooter extends Enemy {
     this.timer.after(delay, () => this.beginFire(), 'fire');
   }
 
-  /** Start the telegraph, then fire when it completes and schedule the next shot. */
   private beginFire(): void {
     this.telegraphing = true;
     this.timer.after(
@@ -94,7 +81,7 @@ export class Shooter extends Enemy {
   private fire(): void {
     if (this.dead || !this.area) return;
     const target = this.getTarget();
-    if (!target) return; // no Ship to aim at — hold fire
+    if (!target) return;
     const heading = angleBetween(this.x, this.y, target.x, target.y);
     const speed = randomRange(ENEMY_PROJECTILE_MIN_SPEED, ENEMY_PROJECTILE_MAX_SPEED);
     const projectile = new EnemyProjectile(this.x, this.y, heading, speed);
@@ -115,7 +102,6 @@ export class Shooter extends Enemy {
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.save();
     ctx.translate(this.x, this.y);
-    // Point the nose toward the current target if there is one.
     const target = this.getTarget();
     if (target) ctx.rotate(angleBetween(this.x, this.y, target.x, target.y));
     ctx.strokeStyle = this.flashing || this.telegraphing ? Palette.negative : Palette.hp;

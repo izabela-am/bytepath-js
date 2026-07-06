@@ -12,7 +12,6 @@
  */
 import type { SkillTree } from '../skilltree/types';
 
-/** The four arrow directions the cursor understands. */
 export type CursorDirection = 'up' | 'down' | 'left' | 'right';
 
 /** Unit vector for each direction in tree space (y grows downward, screen-style). */
@@ -23,7 +22,6 @@ const DIRECTION_VECTORS: Record<CursorDirection, { x: number; y: number }> = {
   right: { x: 1, y: 0 },
 };
 
-/** Index a tree's Nodes by id. */
 function index(tree: SkillTree): Map<string, SkillTree['nodes'][number]> {
   const map = new Map<string, SkillTree['nodes'][number]>();
   for (const node of tree.nodes) map.set(node.id, node);

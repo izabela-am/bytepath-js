@@ -17,10 +17,9 @@ export abstract class GameObject {
   /** Collision circle radius. 0 (default) means "not collidable". */
   radius = 0;
 
-  /** When true, the Area removes this object on its next update pass. */
   dead = false;
 
-  /** The Area this object was added to, if any. Set by Area.add. */
+  /** Set by Area.add. */
   area: import('./Area').Area | null = null;
 
   constructor(x = 0, y = 0) {
@@ -28,15 +27,13 @@ export abstract class GameObject {
     this.y = y;
   }
 
-  /** Advance this object by `dt` seconds. */
   abstract update(dt: number): void;
 
-  /** Draw this object. The only method permitted to use the canvas API. */
   abstract draw(ctx: CanvasRenderingContext2D): void;
 
   /**
-   * Mark this object for removal. Override to release timers or child objects,
-   * then call `super.destroy()`. Idempotent.
+   * Override to release timers or child objects, then call `super.destroy()`.
+   * Idempotent.
    */
   destroy(): void {
     this.dead = true;

@@ -41,7 +41,6 @@ import {
   type RunModifiers,
 } from '../skilltree/modifiers';
 
-/** Contact damage an enemy deals to the Ship on collision. */
 const ENEMY_CONTACT_DAMAGE = 30;
 
 /** Base chance an enemy drops an Ammo pickup on death (before `ammoDropChance`). */
@@ -89,7 +88,6 @@ export class Stage implements Room {
   private readonly ammoDropChance: number;
   /** Resolved SP banked per SP pickup (integer, floored ≥ 0). */
   private readonly spPickupValue: number;
-  /** SP collected so far this Run; banked in full when the Run ends. */
   private spCollected = 0;
 
   /**
@@ -154,7 +152,6 @@ export class Stage implements Room {
     });
   }
 
-  /** Current Run's Score. Read-only view for callers/tests. */
   get currentScore(): number {
     return this.score.value;
   }
@@ -193,8 +190,6 @@ export class Stage implements Room {
     }
   }
 
-  // --- Spawning (Director callbacks) --------------------------------------
-
   private spawnEnemy(name: EnemyName): void {
     if (name === 'Shooter') {
       // Aim at the live Ship; hold fire (null) once the Ship is gone.
@@ -223,15 +218,12 @@ export class Stage implements Room {
     }
   }
 
-  // --- Collision response --------------------------------------------------
-
   private resolveCollisions(): void {
     this.resolveProjectileHits();
     this.resolveShipDamage();
     this.resolvePickups();
   }
 
-  /** Ship Projectiles that overlap an enemy deal damage; the projectile dies. */
   private resolveProjectileHits(): void {
     const projectiles = this.area.getGameObjectsByClass<Projectile>(Projectile);
     for (const p of projectiles) {
@@ -252,7 +244,6 @@ export class Stage implements Room {
     }
   }
 
-  /** Award Score, spawn an explosion, and roll an Ammo drop when an enemy dies. */
   private onEnemyKilled(enemy: Enemy): void {
     this.score.addKill(enemy.scoreValue);
     this.area.add(new Explosion(enemy.x, enemy.y, { color: Palette.hp, count: 8 }));
@@ -261,18 +252,15 @@ export class Stage implements Room {
     }
   }
 
-  /** Enemies and EnemyProjectiles that touch the Ship damage it. */
   private resolveShipDamage(): void {
     if (this.ship.dead) return;
 
-    // EnemyProjectiles: deal their damage and self-destruct on contact.
     for (const proj of this.area.queryCircleOverlap<EnemyProjectile>(this.ship, EnemyProjectile)) {
       const killed = this.ship.takeDamage(proj.damage);
       proj.destroy();
       if (this.onShipHit(killed)) return;
     }
 
-    // Enemy bodies: deal contact damage and destroy themselves on impact.
     for (const enemy of this.area.queryCircleOverlap<Enemy>(this.ship, Enemy)) {
       const killed = this.ship.takeDamage(ENEMY_CONTACT_DAMAGE);
       // The enemy is destroyed on impact (no Score, no drop — it wasn't shot).
@@ -297,7 +285,6 @@ export class Stage implements Room {
 
   private onShipDeath(): void {
     this.sfx?.shipDeath();
-    // A large screen-ward explosion where the Ship fell.
     this.area.add(
       new Explosion(this.ship.x, this.ship.y, {
         color: Palette.default,
@@ -311,7 +298,6 @@ export class Stage implements Room {
     this.runState.die(this.score.value);
   }
 
-  /** Ship-Pickup overlaps: apply the effect, award Score, effect + sound. */
   private resolvePickups(): void {
     if (this.ship.dead) return;
     for (const pickup of this.area.queryCircleOverlap<Pickup>(this.ship, Pickup)) {
@@ -322,7 +308,6 @@ export class Stage implements Room {
   private collect(pickup: Pickup): void {
     switch (pickup.kind) {
       case 'Ammo':
-        // Grant the modifier-resolved amount (identity => AMMO_PICKUP_AMOUNT).
         this.attacks.addAmmo(this.ammoPickupAmount);
         break;
       case 'Boost':

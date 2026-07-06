@@ -1,7 +1,5 @@
 /**
- * Attack pickup — swaps the Ship's current Attack when collected (CONTEXT.md:
- * "collecting an Attack pickup replaces the current one"). Each pickup carries a
- * specific non-Neutral Attack chosen at spawn, and draws a triangular glyph in
+ * Carries a specific non-Neutral Attack chosen at spawn, and draws its glyph in
  * that Attack's color so the player can read what they're about to pick up.
  */
 import { Pickup } from './Pickup';
@@ -17,9 +15,6 @@ export class AttackPickup extends Pickup {
   /** The Attack this pickup grants (never Neutral). */
   readonly attackName: AttackName;
 
-  /**
-   * @param attackName Attack to grant. Defaults to a random non-Neutral choice.
-   */
   constructor(x: number, y: number, attackName: AttackName = randomChoice(ATTACK_PICKUP_CHOICES)) {
     super(x, y);
     this.attackName = attackName;

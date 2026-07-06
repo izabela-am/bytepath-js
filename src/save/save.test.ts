@@ -11,7 +11,6 @@ import {
   type SaveStorage,
 } from './save';
 
-/** In-memory SaveStorage fake — no real localStorage touched. */
 function fakeStorage(seed?: string): SaveStorage & { raw(): string | null } {
   let value: string | null = seed ?? null;
   return {
@@ -47,7 +46,6 @@ describe('save', () => {
     store(storage, { version: 1, sp: 5, ownedNodes: ['a'], bestScore: 0 });
     const loaded = load(storage);
     loaded.ownedNodes.push('b');
-    // Re-loading is unaffected by mutating the earlier result.
     expect(load(storage).ownedNodes).toEqual(['a']);
   });
 

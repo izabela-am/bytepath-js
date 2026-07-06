@@ -1,8 +1,4 @@
 /**
- * A projectile fired by an Attack. Moves in a straight line at a constant speed
- * along its heading and dies when it leaves the playfield. Ported from the
- * tutorial's Projectile: a small line drawn in the Attack's color.
- *
  * Collision response (dealing `damage` to enemies) lives with whoever runs the
  * overlap query — the Area only reports overlaps (see INTERFACES.md). This class
  * just exposes `damage` and `radius`.
@@ -12,13 +8,11 @@ import { PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT } from '../game/constants';
 import { vectorFromAngle } from '../engine/mathutils';
 import { Palette, type PaletteColor } from '../game/palette';
 
-/** Constant travel speed for every projectile, in px/s. */
+/** In px/s. */
 export const PROJECTILE_SPEED = 200;
 
-/** Collision circle radius shared by all projectiles. */
 export const PROJECTILE_RADIUS = 2.5;
 
-/** Default damage dealt on hit. */
 export const PROJECTILE_DAMAGE = 100;
 
 /** Margin (px) past the playfield edge before a projectile is culled. */
@@ -27,11 +21,9 @@ const OFFSCREEN_MARGIN = 8;
 export interface ProjectileOptions {
   /** Heading in radians (atan2 convention). */
   angle: number;
-  /** Color to draw in. Defaults to the neutral geometry color. */
   color?: PaletteColor;
-  /** Damage dealt on hit. Defaults to PROJECTILE_DAMAGE. */
   damage?: number;
-  /** Travel speed in px/s. Defaults to PROJECTILE_SPEED. */
+  /** In px/s. */
   speed?: number;
 }
 
@@ -70,7 +62,6 @@ export class Projectile extends GameObject {
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
-    // A short line segment oriented along the heading, tutorial-style.
     const half = 4;
     const dir = vectorFromAngle(this.angle, half);
     ctx.strokeStyle = this.color;

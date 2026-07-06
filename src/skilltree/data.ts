@@ -34,7 +34,6 @@ export const sampleTree: SkillTree = {
       y: 0,
       edges: ['rapid', 'plating', 'thruster'],
     },
-    // Offense branch (right).
     {
       id: 'rapid',
       label: 'Rapid Fire',
@@ -65,7 +64,6 @@ export const sampleTree: SkillTree = {
       y: 1,
       edges: ['rapid'],
     },
-    // Defense branch (left).
     {
       id: 'plating',
       label: 'Reinforced Plating',
@@ -84,7 +82,6 @@ export const sampleTree: SkillTree = {
       y: -1,
       edges: ['plating'],
     },
-    // Economy branch (down).
     {
       id: 'thruster',
       label: 'Thruster Tuning',
@@ -156,7 +153,6 @@ export const skillTree: SkillTree = {
       edges: ['sHull', 'gRapid', 'eScav', 'hAgile', 'scFocusIn'],
     },
 
-    // ── NORTH: survival branch (maxHp, regen, boost pool) ──────────────
     {
       id: 'sHull',
       label: 'HULL+',
@@ -206,7 +202,6 @@ export const skillTree: SkillTree = {
       edges: ['sRegen', 'sReserve'],
     },
 
-    // ── EAST: gunnery branch (fireRate, damage, speed, ammo) ───────────
     {
       id: 'gRapid',
       label: 'RAPID FIRE',
@@ -256,7 +251,6 @@ export const skillTree: SkillTree = {
       edges: ['gVeloc', 'gMag'],
     },
 
-    // ── SOUTH: greed branch (pickups, drop chance, SP value) ───────────
     {
       id: 'eScav',
       label: 'SCAVENGER',
@@ -303,7 +297,6 @@ export const skillTree: SkillTree = {
       edges: ['eVeins', 'eValue'],
     },
 
-    // ── WEST: handling branch (turn rate, boost pool) ──────────────────
     {
       id: 'hAgile',
       label: 'AGILE',
@@ -344,7 +337,6 @@ export const skillTree: SkillTree = {
       edges: ['hNimble'],
     },
 
-    // ── SOUTHWEST: scoring branch (scoreMultiplier chain) ──────────────
     {
       id: 'scFocusIn',
       label: 'FOCUS',
@@ -385,8 +377,8 @@ export const skillTree: SkillTree = {
       edges: ['scStreak'],
     },
 
-    // ── Inner-ring bridges: cross-link adjacent branches so routes weave ─
-    // a connected web rather than five isolated spokes.
+    // Inner-ring bridges cross-link adjacent branches so routes weave a
+    // connected web rather than five isolated spokes.
     {
       id: 'bridgeNW',
       label: 'GYROS',

@@ -11,7 +11,6 @@
  * fires. It never touches the save, the tree, or storage.
  */
 
-/** The stable set of menu entries, in display order. */
 export type MenuEntry = 'new-run' | 'skill-tree' | 'respec' | 'scanlines' | 'sound';
 
 /** Menu entries in the fixed vertical order the cursor walks. */
@@ -37,32 +36,26 @@ export type MenuAction =
 
 export class MenuState {
   private index = 0;
-  /** True once Respec has been armed and is awaiting a confirming Enter. */
   private respecArmed = false;
 
-  /** Index of the highlighted entry. */
   get selectedIndex(): number {
     return this.index;
   }
 
-  /** The highlighted entry. */
   get selected(): MenuEntry {
     // MENU_ENTRIES is non-empty and index is always kept in range.
     return MENU_ENTRIES[this.index] as MenuEntry;
   }
 
-  /** Whether the Respec entry is currently armed (showing its "confirm?" state). */
   get isRespecArmed(): boolean {
     return this.respecArmed;
   }
 
-  /** Move the cursor up one entry (wraps). Cancels a pending Respec confirm. */
   moveUp(): void {
     this.respecArmed = false;
     this.index = (this.index - 1 + MENU_ENTRIES.length) % MENU_ENTRIES.length;
   }
 
-  /** Move the cursor down one entry (wraps). Cancels a pending Respec confirm. */
   moveDown(): void {
     this.respecArmed = false;
     this.index = (this.index + 1) % MENU_ENTRIES.length;
@@ -86,7 +79,6 @@ export class MenuState {
       return 'respec';
     }
 
-    // Any other activation clears a stray armed state.
     this.respecArmed = false;
     switch (entry) {
       case 'new-run':

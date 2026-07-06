@@ -7,7 +7,6 @@ import { ATTACKS } from './attacks';
 
 const SOURCE = { x: 100, y: 100, angle: 0 };
 
-/** Advance a system+timer by `total` seconds in `steps` equal ticks. */
 function advance(sys: AttackSystem, timer: Timer, total: number, steps: number): void {
   const dt = total / steps;
   for (let i = 0; i < steps; i += 1) {
@@ -46,7 +45,6 @@ describe('Ammo spend math', () => {
   it('Double spends 2 Ammo per trigger', () => {
     const { sys, timer } = setup();
     sys.setAttack('Double');
-    // One trigger exactly at the fire interval.
     advance(sys, timer, ATTACKS.Double.fireInterval, 1);
     expect(sys.ammo).toBe(MAX_AMMO - 2);
   });

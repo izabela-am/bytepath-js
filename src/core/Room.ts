@@ -7,10 +7,9 @@
  * registry — we keep it explicit.
  */
 export interface Room {
-  /** Advance the room by `dt` seconds. */
   update(dt: number): void;
 
-  /** Draw the room. Only Rooms and GameObjects touch the canvas API. */
+  /** Only Rooms and GameObjects touch the canvas API. */
   draw(ctx: CanvasRenderingContext2D): void;
 
   /** Release everything the room owns (Areas, timers, listeners). */
@@ -20,12 +19,10 @@ export interface Room {
 export class RoomManager {
   private current: Room | null = null;
 
-  /** The active room, or null before the first `gotoRoom`. */
   get room(): Room | null {
     return this.current;
   }
 
-  /** Destroy the current room (if any) and make `room` active. */
   gotoRoom(room: Room): void {
     this.current?.destroy();
     this.current = room;

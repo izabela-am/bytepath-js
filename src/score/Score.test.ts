@@ -26,22 +26,22 @@ describe('Score', () => {
     // Feed just past a whole second via small dts; fractional accumulation must
     // reach at least one whole survival point.
     for (let i = 0; i < 61; i++) s.addSurvival(1 / 60);
-    expect(s.value).toBe(SURVIVAL_RATE); // ~1 second => SURVIVAL_RATE points
+    expect(s.value).toBe(SURVIVAL_RATE);
   });
 
   it('floors fractional survival but keeps the remainder', () => {
     const s = new Score();
     s.addSurvival(0.4);
     expect(s.value).toBe(0);
-    s.addSurvival(0.7); // total 1.1s
+    s.addSurvival(0.7);
     expect(s.value).toBe(1);
   });
 
   it('combines all three sources', () => {
     const s = new Score();
     s.addKill(100);
-    s.addPickup('Attack'); // 150
-    s.addSurvival(2); // 2 whole seconds => 2 survival points
+    s.addPickup('Attack');
+    s.addSurvival(2);
     expect(s.value).toBe(100 + 150 + 2);
   });
 
@@ -56,16 +56,16 @@ describe('Score scoreMultiplier', () => {
   it('leaves every source unchanged at multiplier 1 (identity => v1 behavior)', () => {
     const s = new Score(1);
     s.addKill(100);
-    s.addPickup('Attack'); // 150
-    s.addSurvival(3); // 3 survival points
+    s.addPickup('Attack');
+    s.addSurvival(3);
     expect(s.value).toBe(100 + 150 + 3);
   });
 
   it('scales kills, pickups, and survival by a non-identity multiplier', () => {
     const s = new Score(2);
-    s.addKill(100); // => 200
-    s.addPickup('Ammo'); // 50 => 100
-    s.addSurvival(4); // 4 => 8
+    s.addKill(100);
+    s.addPickup('Ammo');
+    s.addSurvival(4);
     expect(s.value).toBe(200 + 100 + 8);
   });
 
@@ -77,8 +77,8 @@ describe('Score scoreMultiplier', () => {
 
   it('a smaller multiplier scales Score down', () => {
     const s = new Score(0.5);
-    s.addKill(100); // => 50
-    s.addSurvival(10); // 10 * 0.5 = 5
+    s.addKill(100);
+    s.addSurvival(10);
     expect(s.value).toBe(50 + 5);
   });
 });

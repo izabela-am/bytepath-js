@@ -12,10 +12,8 @@ import { clamp } from '../engine/mathutils';
 import type { AttackName } from '../combat/attacks';
 import type { PickupKind } from '../score/Score';
 
-/** How much Ammo an Ammo pickup grants. */
 export const AMMO_PICKUP_AMOUNT = 5;
 
-/** How much Boost a Boost pickup grants. */
 export const BOOST_PICKUP_AMOUNT = 25;
 
 /** Base SP an SP pickup banks before the `spPickupValue` stat is applied. */
@@ -51,27 +49,16 @@ export interface AttackSink {
   setAttack(name: AttackName): void;
 }
 
-/**
- * Apply an Ammo pickup: add AMMO_PICKUP_AMOUNT to the Ammo pool (the sink clamps
- * to its own max).
- */
+/** The sink clamps to its own max. */
 export function applyAmmoPickup(sink: AttackSink): void {
   sink.addAmmo(AMMO_PICKUP_AMOUNT);
 }
 
-/**
- * Apply a Boost pickup: add BOOST_PICKUP_AMOUNT to the Boost meter, clamped to
- * its max. Returns the new meter value for convenience.
- */
 export function applyBoostPickup(sink: BoostSink): number {
   sink.current = clamp(sink.current + BOOST_PICKUP_AMOUNT, 0, sink.max);
   return sink.current;
 }
 
-/**
- * Apply an Attack pickup: swap the current Attack to `name` (a non-Neutral
- * choice picked by the caller / pickup).
- */
 export function applyAttackPickup(sink: AttackSink, name: AttackName): void {
   sink.setAttack(name);
 }

@@ -1,12 +1,3 @@
-/**
- * Rock — the basic drifting enemy. Spawns just outside a random edge and travels
- * across the playfield in a straight line at a random speed, slowly rotating. It
- * doesn't fire or steer; it's pure pressure the Ship must dodge or destroy.
- * Dies once it drifts fully off the far side (or when its HP is gone).
- *
- * Visual: a slowly-spinning irregular polygon in the HP hue, flashing on hit —
- * the tutorial's "Rock" asteroid shape.
- */
 import { Enemy } from './Enemy';
 import { spawnPointOnEdge, type SpawnEdge } from './Enemy';
 import { Palette } from '../game/palette';
@@ -32,7 +23,6 @@ export const ROCK_MAX_SPEED = 60;
 const ROCK_MIN_SPIN = 0.4;
 const ROCK_MAX_SPIN = 1.4;
 
-/** Number of vertices in the rock silhouette. */
 const ROCK_VERTICES = 6;
 
 export class Rock extends Enemy {

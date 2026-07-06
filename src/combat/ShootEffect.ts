@@ -1,8 +1,4 @@
 /**
- * A brief square flash at the muzzle when the Ship fires. Purely cosmetic;
- * ported from the tutorial's ShootEffect. Shrinks to nothing via a Timer tween
- * and then removes itself.
- *
  * The effect is driven by an externally owned Timer (the Room's), passed in at
  * construction, so it advances on the same fixed dt as everything else.
  */
@@ -10,10 +6,10 @@ import { GameObject } from '../core/GameObject';
 import { Timer, Easing } from '../engine/timer';
 import { Palette, type PaletteColor } from '../game/palette';
 
-/** Starting half-size (px) of the flash square. */
+/** Half-size (px) of the flash square. */
 const START_SIZE = 6;
 
-/** How long the flash takes to shrink away, in seconds. */
+/** Seconds. */
 const DURATION = 0.12;
 
 export class ShootEffect extends GameObject {
@@ -29,7 +25,7 @@ export class ShootEffect extends GameObject {
     this.timer = timer;
     this.color = color;
 
-    // Shrink to zero, then die. Tagged so a caller could cancel a batch.
+    // Tagged so a caller could cancel a batch.
     this.timer.tween(
       DURATION,
       this.state,

@@ -16,27 +16,20 @@
 import type { SaveData } from '../save/save';
 import type { SkillTree } from './types';
 
-/** Index a tree's Nodes by id for O(1) lookup. */
 function nodeIndex(tree: SkillTree): Map<string, SkillTree['nodes'][number]> {
   const index = new Map<string, SkillTree['nodes'][number]>();
   for (const node of tree.nodes) index.set(node.id, node);
   return index;
 }
 
-/**
- * Whether `id` is owned. The root is always owned (implicitly); every other Node
- * is owned iff it appears in `save.ownedNodes`.
- */
 export function isOwned(save: SaveData, tree: SkillTree, id: string): boolean {
   if (id === tree.root) return true;
   return save.ownedNodes.includes(id);
 }
 
 /**
- * Whether `id` can currently be bought: it exists, is not the root, is not
- * already owned, and is adjacent to at least one owned Node (the root counts,
- * so Nodes touching the root are purchasable from a fresh save). Affordability is
- * NOT checked here — that is `buy`'s job; this answers "is it reachable".
+ * Affordability is NOT checked here — that is `buy`'s job; this answers
+ * "is it reachable".
  */
 export function isPurchasable(save: SaveData, tree: SkillTree, id: string): boolean {
   if (id === tree.root) return false;
@@ -48,11 +41,8 @@ export function isPurchasable(save: SaveData, tree: SkillTree, id: string): bool
 }
 
 /**
- * Buy Node `id`: validates it is purchasable (exists, reachable, unowned) and
- * affordable (`save.sp >= cost`), then returns a NEW save with the Node added and
- * its cost deducted. Returns the save unchanged (a fresh copy) when the purchase
- * is illegal — callers can compare identity or re-query to detect the no-op. The
- * input save is never mutated.
+ * Returns the save unchanged (a fresh copy) when the purchase is illegal —
+ * callers can compare identity or re-query to detect the no-op.
  */
 export function buy(save: SaveData, tree: SkillTree, id: string): SaveData {
   if (!isPurchasable(save, tree, id)) return { ...save, ownedNodes: [...save.ownedNodes] };
@@ -68,10 +58,8 @@ export function buy(save: SaveData, tree: SkillTree, id: string): SaveData {
 }
 
 /**
- * Respec (CONTEXT.md): all-or-nothing. Returns a NEW save with every owned Node
- * cleared and all spent SP refunded (the summed cost of the currently-owned
- * Nodes added back). The input save is never mutated. Unknown owned ids
- * contribute 0 to the refund.
+ * Respec is all-or-nothing (CONTEXT.md): every owned Node is cleared and all
+ * spent SP refunded. Unknown owned ids contribute 0 to the refund.
  */
 export function respec(save: SaveData, tree: SkillTree): SaveData {
   const index = nodeIndex(tree);
@@ -83,7 +71,6 @@ export function respec(save: SaveData, tree: SkillTree): SaveData {
   return { ...save, sp: save.sp + refund, ownedNodes: [] };
 }
 
-/** A single structural problem found by {@link validateTree}. */
 export interface TreeValidationError {
   kind: 'duplicate-id' | 'unknown-root' | 'asymmetric-edge' | 'unknown-edge' | 'disconnected' | 'non-positive-cost' | 'self-edge';
   message: string;
@@ -104,7 +91,6 @@ export interface TreeValidationError {
 export function validateTree(tree: SkillTree): TreeValidationError[] {
   const errors: TreeValidationError[] = [];
 
-  // Unique ids.
   const seen = new Set<string>();
   for (const node of tree.nodes) {
     if (seen.has(node.id)) {
@@ -115,12 +101,10 @@ export function validateTree(tree: SkillTree): TreeValidationError[] {
 
   const index = nodeIndex(tree);
 
-  // Root exists.
   if (!index.has(tree.root)) {
     errors.push({ kind: 'unknown-root', message: `root "${tree.root}" is not a Node` });
   }
 
-  // Costs (root may be 0; every other Node must be positive).
   for (const node of tree.nodes) {
     if (node.id === tree.root) continue;
     if (!(node.cost > 0)) {
@@ -128,7 +112,6 @@ export function validateTree(tree: SkillTree): TreeValidationError[] {
     }
   }
 
-  // Edges: exist, no self-edge, symmetric.
   for (const node of tree.nodes) {
     for (const neighborId of node.edges) {
       if (neighborId === node.id) {
@@ -146,7 +129,6 @@ export function validateTree(tree: SkillTree): TreeValidationError[] {
     }
   }
 
-  // Connectivity: BFS from the root over edges.
   if (index.has(tree.root)) {
     const reached = new Set<string>([tree.root]);
     const queue = [tree.root];

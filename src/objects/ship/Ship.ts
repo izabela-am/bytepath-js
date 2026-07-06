@@ -69,7 +69,6 @@ export const DEFAULT_SHIP_STATS: ShipStats = {
   boostRegen: BOOST_REGEN_RATE,
 };
 
-// Trail tuning.
 const TRAIL_INTERVAL = 0.01; // seconds between emitted particles
 const TRAIL_RADIUS = 4; // starting radius of a trail particle
 const TRAIL_LIFETIME = 0.15; // seconds a particle takes to shrink away
@@ -97,7 +96,6 @@ export class Ship extends GameObject {
   private readonly timer: Timer;
   /** True when the Ship created its own Timer (so it must advance it). */
   private readonly ownsTimer: boolean;
-  /** Per-Run steering rate (rad/s); the resolved `turnRate` stat. */
   private readonly turnRate: number;
 
   private velocity = 0;
@@ -109,8 +107,6 @@ export class Ship extends GameObject {
   private aliveTime = 0;
 
   /**
-   * @param input  Shared keyboard tracker (steering + boost).
-   * @param x,y    Spawn position (defaults to playfield center).
    * @param timer  Optional external Timer to drive trail emission. If omitted the
    *               Ship owns one and advances it in `update`. If supplied (e.g. the
    *               room Timer), the caller is responsible for advancing it so it is
@@ -133,7 +129,6 @@ export class Ship extends GameObject {
     this.timer.every(TRAIL_INTERVAL, () => this.emitTrail(), Infinity, 'ship-trail');
   }
 
-  /** Read-only Boost snapshot for the HUD. */
   get boost(): BoostInfo {
     return {
       current: this.boostState.current,
@@ -142,7 +137,6 @@ export class Ship extends GameObject {
     };
   }
 
-  /** Read-only HP snapshot for the HUD. */
   get health(): HealthInfo {
     return {
       current: this.healthState.current,
@@ -151,26 +145,21 @@ export class Ship extends GameObject {
     };
   }
 
-  /** Current HP (0..SHIP_MAX_HP). */
   get hp(): number {
     return this.healthState.current;
   }
 
-  /** Whether the Ship is in its post-hit invulnerability window. */
   get invulnerable(): boolean {
     return isInvulnerable(this.healthState);
   }
 
-  /** Add Boost to the meter, clamped to its max. Boost pickups call this. */
   addBoost(amount: number): void {
     this.boostState.current = Math.min(this.boostState.max, this.boostState.current + amount);
   }
 
   /**
-   * Apply `amount` damage to the Ship. Ignored while invulnerable or dead.
    * Returns `true` iff this hit killed the Ship (HP reached 0 this call), so the
-   * Stage can trigger the death beat exactly once. On a landed hit the Ship
-   * enters a brief invulnerability window (see health.ts).
+   * Stage can trigger the death beat exactly once.
    */
   takeDamage(amount: number): boolean {
     return applyDamage(this.healthState, amount);
@@ -194,12 +183,10 @@ export class Ship extends GameObject {
 
   private applyBoost(dt: number): void {
     const requesting = this.input.anyDown('ArrowUp', 'ArrowDown');
-    // Advance the meter; `spent` is true only when Boost is genuinely consumed.
     const spent = updateBoost(this.boostState, dt, requesting);
     this.boostingNow = spent;
   }
 
-  /** The max velocity this tick, scaled by an honoured boost/brake request. */
   private currentMaxVelocity(): number {
     if (!this.boostingNow) return BASE_MAX_VELOCITY;
     if (this.input.isDown('ArrowUp')) return BASE_MAX_VELOCITY * BOOST_MULTIPLIER;
@@ -223,7 +210,6 @@ export class Ship extends GameObject {
     this.y += v.y;
   }
 
-  /** Wrap around the playfield edges (exit right -> enter left, etc.). */
   private wrap(): void {
     if (this.x < 0) this.x += PLAYFIELD_WIDTH;
     else if (this.x >= PLAYFIELD_WIDTH) this.x -= PLAYFIELD_WIDTH;
@@ -231,7 +217,6 @@ export class Ship extends GameObject {
     else if (this.y >= PLAYFIELD_HEIGHT) this.y -= PLAYFIELD_HEIGHT;
   }
 
-  /** Emit one fading circle from the rear of the Ship. */
   private emitTrail(): void {
     if (!this.area) return;
     const rear = vectorFromAngle(this.angle, -this.radius);
@@ -255,7 +240,6 @@ export class Ship extends GameObject {
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
 
-    // Boost tints the outline toward the boost color for feedback.
     ctx.strokeStyle = this.boostingNow ? Palette.boost : Palette.default;
     ctx.lineWidth = 1;
 

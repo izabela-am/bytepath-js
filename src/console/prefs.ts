@@ -14,21 +14,17 @@
 /** Reuses the save module's minimal Web Storage subset so tests share one fake. */
 import type { SaveStorage } from '../save/save';
 
-/** The persisted preference shape. */
 export interface Prefs {
   scanlines: boolean;
   sound: boolean;
 }
 
-/** The localStorage key for prefs — separate from the game save's key. */
 export const PREFS_KEY = 'bytepath-prefs';
 
-/** Defaults: scanlines on (the intended default look), sound on. */
 export function defaultPrefs(): Prefs {
   return { scanlines: true, sound: true };
 }
 
-/** Structural check that a parsed payload is a valid Prefs object. */
 function isValidPrefs(value: unknown): value is Prefs {
   if (typeof value !== 'object' || value === null) return false;
   const v = value as Record<string, unknown>;
@@ -54,7 +50,6 @@ export function loadPrefs(storage: SaveStorage): Prefs {
   return { scanlines: parsed.scanlines, sound: parsed.sound };
 }
 
-/** Serialize and persist `prefs` under {@link PREFS_KEY}. */
 export function storePrefs(storage: SaveStorage, prefs: Prefs): void {
   storage.setItem(PREFS_KEY, JSON.stringify(prefs));
 }

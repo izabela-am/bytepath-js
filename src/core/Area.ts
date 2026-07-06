@@ -17,14 +17,12 @@ export type Constructor<T> = abstract new (...args: never[]) => T;
 export class Area {
   private objects: GameObject[] = [];
 
-  /** Register an object, wiring its `area` back-reference. Returns the object. */
   add<T extends GameObject>(object: T): T {
     object.area = this;
     this.objects.push(object);
     return object;
   }
 
-  /** Advance all objects, then remove any that are dead. */
   update(dt: number): void {
     for (const object of this.objects) {
       if (!object.dead) object.update(dt);
@@ -42,7 +40,6 @@ export class Area {
     }
   }
 
-  /** All live objects that are instances of `cls`. */
   getGameObjectsByClass<T extends GameObject>(cls: Constructor<T>): T[] {
     const result: T[] = [];
     for (const object of this.objects) {
@@ -51,12 +48,11 @@ export class Area {
     return result;
   }
 
-  /** All live objects. Returns a copy; safe to iterate while mutating the Area. */
+  /** Returns a copy; safe to iterate while mutating the Area. */
   all(): GameObject[] {
     return this.objects.filter((o) => !o.dead);
   }
 
-  /** Live object count (excludes dead-but-not-yet-culled). */
   get count(): number {
     let n = 0;
     for (const o of this.objects) if (!o.dead) n += 1;
@@ -64,8 +60,8 @@ export class Area {
   }
 
   /**
-   * Do two objects' collision circles overlap? Objects with `radius <= 0` never
-   * collide. Touching edges counts as overlap.
+   * Objects with `radius <= 0` never collide. Touching edges counts as
+   * overlap.
    */
   static circlesOverlap(a: GameObject, b: GameObject): boolean {
     if (a.radius <= 0 || b.radius <= 0) return false;
@@ -108,7 +104,6 @@ export class Area {
     return result;
   }
 
-  /** Destroy and remove every object. */
   clear(): void {
     for (const object of this.objects) object.destroy();
     this.objects = [];

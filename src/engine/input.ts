@@ -33,27 +33,22 @@ export class Input {
     this.target.addEventListener('keyup', this.handleKeyUp as EventListener);
   }
 
-  /** True while `code` is held. */
   isDown(code: string): boolean {
     return this.down.has(code);
   }
 
-  /** True on the frame `code` went from up to down; cleared by `endFrame`. */
   pressed(code: string): boolean {
     return this.pressedThisFrame.has(code);
   }
 
-  /** True if any of the given codes is currently held. */
   anyDown(...codes: string[]): boolean {
     return codes.some((c) => this.down.has(c));
   }
 
-  /** Consume this frame's press edges. Call once per update tick. */
   endFrame(): void {
     this.pressedThisFrame.clear();
   }
 
-  /** Detach listeners. */
   destroy(): void {
     this.target.removeEventListener('keydown', this.handleKeyDown as EventListener);
     this.target.removeEventListener('keyup', this.handleKeyUp as EventListener);

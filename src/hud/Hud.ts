@@ -12,7 +12,6 @@ import { Palette } from '../game/palette';
 import { PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT } from '../game/constants';
 import { clamp } from '../engine/mathutils';
 
-/** Everything the HUD needs for one frame. */
 export interface HudSnapshot {
   hp: number;
   maxHp: number;
@@ -61,21 +60,17 @@ export class Hud {
       `BOOST ${Math.round(s.boost)}`,
     );
 
-    // Current Attack name, bottom-right.
     ctx.fillStyle = Palette.default;
     ctx.textAlign = 'right';
     ctx.fillText(s.attackName.toUpperCase(), PLAYFIELD_WIDTH - MARGIN, PLAYFIELD_HEIGHT - MARGIN);
 
-    // Score, top-right.
     ctx.fillStyle = Palette.score;
     ctx.textAlign = 'right';
     ctx.fillText(`${s.score}`, PLAYFIELD_WIDTH - MARGIN, MARGIN + 8);
 
-    // SP collected this Run, just below the Score in the SP color.
     ctx.fillStyle = Palette.sp;
     ctx.fillText(`SP ${s.sp}`, PLAYFIELD_WIDTH - MARGIN, MARGIN + 8 + 10);
 
-    // Transient "LAST RUN" line, top-left.
     if (s.lastRunScore !== null) {
       ctx.fillStyle = Palette.defaultDim;
       ctx.textAlign = 'left';
@@ -85,7 +80,6 @@ export class Hud {
     ctx.restore();
   }
 
-  /** Draw a labeled resource bar: outline, filled portion, then the label above. */
   private bar(
     ctx: CanvasRenderingContext2D,
     x: number,

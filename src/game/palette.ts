@@ -7,25 +7,12 @@
  * pass these straight to `ctx.strokeStyle` / `ctx.fillStyle`.
  */
 export const Palette = {
-  /** Playfield background. */
   background: '#111111',
-
-  /** Default geometry color for the Ship and neutral shapes. */
   default: '#f0f0f0',
-
-  /** A slightly dimmer default for secondary/background geometry. */
   defaultDim: '#8c8c8c',
-
-  /** HP / damage. */
   hp: '#e0524a',
-
-  /** Ammo resource. */
   ammo: '#54d669',
-
-  /** Boost resource. */
   boost: '#4ad2e0',
-
-  /** Score. */
   score: '#f4e04d',
 
   /** SP — the persistent Skill Tree currency. */

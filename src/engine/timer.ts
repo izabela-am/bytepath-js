@@ -13,7 +13,6 @@
 
 export type EasingFn = (t: number) => number;
 
-/** Signature for a per-tick callback used by `during`. */
 type DuringFn = (elapsed: number, dt: number) => void;
 
 interface AfterEntry {
@@ -63,7 +62,6 @@ export type TimerHandle = Entry;
 export const Easing = {
   linear: (t: number): number => t,
 
-  /** Smooth acceleration then deceleration. */
   inOutCubic: (t: number): number =>
     t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
 
@@ -78,26 +76,17 @@ export const Easing = {
 export class Timer {
   private entries: Entry[] = [];
 
-  /** Run `fn` once after `delay` seconds. */
   after(delay: number, fn: () => void, tag?: string): TimerHandle {
     const entry: AfterEntry = { kind: 'after', tag, time: 0, delay, fn };
     return this.push(entry);
   }
 
-  /**
-   * Run `fn` every `interval` seconds. If `count` is given, stop after that
-   * many fires; otherwise repeat forever until cancelled.
-   */
   every(interval: number, fn: () => void, count = Infinity, tag?: string): TimerHandle {
     const entry: EveryEntry = { kind: 'every', tag, time: 0, interval, count, fn };
     return this.push(entry);
   }
 
-  /**
-   * Tween numeric `props` on `target` toward the given values over `duration`
-   * seconds. `easing` defaults to linear. `onComplete` fires after the final
-   * value is applied.
-   */
+  /** `onComplete` fires after the final value is applied. */
   tween(
     duration: number,
     target: Record<string, number>,
@@ -140,28 +129,24 @@ export class Timer {
     return this.push(entry);
   }
 
-  /** Cancel a single scheduled entry by its handle. Safe to call twice. */
+  /** Safe to call twice. */
   cancel(handle: TimerHandle): void {
     const i = this.entries.indexOf(handle);
     if (i !== -1) this.entries.splice(i, 1);
   }
 
-  /** Cancel every entry started with the given tag. */
   cancelTag(tag: string): void {
     this.entries = this.entries.filter((e) => e.tag !== tag);
   }
 
-  /** Cancel everything. */
   clear(): void {
     this.entries = [];
   }
 
-  /** Number of live entries — handy for tests and debugging. */
   get size(): number {
     return this.entries.length;
   }
 
-  /** Advance all timers by `dt` seconds. */
   update(dt: number): void {
     // Iterate over a snapshot: callbacks may schedule or cancel entries.
     const snapshot = this.entries.slice();

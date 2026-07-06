@@ -1,16 +1,10 @@
-/**
- * A brief expanding ring drawn when the Ship collects a Pickup. Purely cosmetic;
- * grows and fades over a short lifetime, then removes itself. Colored to match
- * the collected Pickup. Only `draw` touches the canvas.
- */
 import { GameObject } from '../core/GameObject';
 import { TWO_PI } from '../engine/mathutils';
 import { Palette, type PaletteColor } from '../game/palette';
 
-/** Seconds the ring takes to expand and fade. */
+/** Seconds. */
 const DURATION = 0.25;
 
-/** Starting and ending radius of the ring, px. */
 const START_RADIUS = 4;
 const END_RADIUS = 14;
 

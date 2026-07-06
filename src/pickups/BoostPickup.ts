@@ -1,7 +1,3 @@
-/**
- * Boost pickup — refills part of the Boost meter when collected. Drawn as a small
- * diamond in the Boost color. The Stage handles the collect effect.
- */
 import { Pickup } from './Pickup';
 import { Palette, type PaletteColor } from '../game/palette';
 import type { PickupKind } from '../score/Score';

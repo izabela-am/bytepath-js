@@ -3,11 +3,8 @@ import { Timer } from '../../engine/timer';
 import type { PaletteColor } from '../../game/palette';
 
 /**
- * A single fading circle emitted from the Ship's rear thruster. Ported from the
- * LÖVE tutorial's `TrailParticle`: it spawns at a radius, tweens that radius to
- * zero over a short lifetime, then destroys itself. Color is fixed at spawn
- * (Palette.boost while boosting, Palette.defaultDim otherwise) so a boost burst
- * reads as a colored streak trailing the Ship.
+ * Color is fixed at spawn (Palette.boost while boosting, Palette.defaultDim
+ * otherwise) so a boost burst reads as a colored streak trailing the Ship.
  *
  * The particle owns a small Timer so it is self-contained: the Ship (or Room)
  * only has to `area.add(new TrailParticle(...))` and forget about it. Not
@@ -18,8 +15,7 @@ export class TrailParticle extends GameObject {
 
   /**
    * Visual radius, tweened to 0 over the lifetime. Held in a plain object (not
-   * on `this`) because Timer.tween mutates a `Record<string, number>`. Separate
-   * from the (0) collision radius on GameObject — trail particles never collide.
+   * on `this`) because Timer.tween mutates a `Record<string, number>`.
    */
   private readonly visual: { r: number };
 
@@ -29,7 +25,7 @@ export class TrailParticle extends GameObject {
     super(x, y);
     this.visual = { r: radius };
     this.color = color;
-    // Shrink to nothing, then die. Tag so destroy() can cancel cleanly.
+    // Tag so destroy() can cancel cleanly.
     this.timer.tween(
       lifetime,
       this.visual,

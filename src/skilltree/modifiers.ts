@@ -40,21 +40,13 @@ export const STATS: readonly Stat[] = [
   'scoreMultiplier',
 ];
 
-/** The additive terms for one stat. */
 export interface StatModifier {
   flat: number;
   percent: number;
 }
 
-/** The full set of per-stat modifiers a Run reads at launch. */
 export type RunModifiers = Record<Stat, StatModifier>;
 
-/**
- * The zero modifier: every stat at `{ flat: 0, percent: 0 }`. Applying it leaves
- * every base stat unchanged (`base * (1 + 0) + 0 === base`), so it reproduces v1
- * behavior exactly. This is the identity invariant `computeRunModifiers([], …)`
- * must satisfy.
- */
 export function identityModifiers(): RunModifiers {
   const mods = {} as RunModifiers;
   for (const stat of STATS) {
@@ -76,10 +68,8 @@ export const IDENTITY_MODIFIERS: RunModifiers = Object.freeze(
 ) as RunModifiers;
 
 /**
- * Reduce the owned Node ids into a {@link RunModifiers}, stacking every owned
- * Node's effects additively (flat with flat, percent with percent). Unknown ids
- * and the (implicitly-owned, effect-free) root contribute nothing. With no owned
- * Nodes the result equals {@link IDENTITY_MODIFIERS}.
+ * Unknown ids and the (implicitly-owned, effect-free) root contribute nothing.
+ * With no owned Nodes the result equals {@link IDENTITY_MODIFIERS}.
  */
 export function computeRunModifiers(ownedNodeIds: readonly string[], tree: SkillTree): RunModifiers {
   const mods = identityModifiers();
@@ -95,10 +85,6 @@ export function computeRunModifiers(ownedNodeIds: readonly string[], tree: Skill
   return mods;
 }
 
-/**
- * Apply a stat's modifier to a base value using the documented formula
- * `base * (1 + percent) + flat`. Convenience for Run code reading a stat.
- */
 export function applyModifier(base: number, mod: StatModifier): number {
   return base * (1 + mod.percent) + mod.flat;
 }

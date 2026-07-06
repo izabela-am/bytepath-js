@@ -43,7 +43,6 @@ describe('RunState', () => {
     tickFor(rs, DEATH_BEAT_DURATION + DT);
     expect(rs.consumeRestart()).toBe(true);
     expect(rs.isPlaying).toBe(true);
-    // Only fires once.
     expect(rs.consumeRestart()).toBe(false);
   });
 

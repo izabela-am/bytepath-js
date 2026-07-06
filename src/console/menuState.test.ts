@@ -48,10 +48,10 @@ describe('MenuState', () => {
       const m = new MenuState();
       m.moveDown();
       m.moveDown();
-      m.moveDown(); // scanlines
+      m.moveDown();
       expect(m.selected).toBe('scanlines');
       expect(m.confirm()).toBe('toggle-scanlines');
-      m.moveDown(); // sound
+      m.moveDown();
       expect(m.confirm()).toBe('toggle-sound');
     });
   });

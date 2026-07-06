@@ -11,7 +11,6 @@ import {
 
 const FIXED_DT = 1 / 60;
 
-/** A deterministic fake RNG cycling through a fixed sequence in [0, 1). */
 function fakeRand(sequence: number[]): () => number {
   let i = 0;
   return () => {
@@ -21,7 +20,6 @@ function fakeRand(sequence: number[]): () => number {
   };
 }
 
-/** Build a Director plus recorders for its spawn callbacks. */
 function makeDirector(rand?: () => number) {
   const enemies: EnemyName[] = [];
   const resources: ResourceName[] = [];
@@ -37,7 +35,6 @@ function makeDirector(rand?: () => number) {
   return { director, enemies, resources };
 }
 
-/** Feed `seconds` of fixed-dt ticks to the Director. */
 function advance(director: Director, seconds: number): void {
   const ticks = Math.round(seconds / FIXED_DT);
   for (let i = 0; i < ticks; i++) director.update(FIXED_DT);
@@ -151,7 +148,7 @@ describe('Director resource cadence', () => {
   });
 
   it('applies the weighted resource distribution', () => {
-    // roll < 0.6 => Boost, < 0.85 => Attack, else Ammo.
+    // roll < 0.45 => Boost, < 0.65 => SP, < 0.85 => Attack, else Ammo.
     const boost = makeDirector(fakeRand([0.3]));
     advance(boost.director, RESOURCE_INTERVAL);
     expect(boost.resources[0]).toBe('Boost');

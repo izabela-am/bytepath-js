@@ -22,7 +22,6 @@ export const BOOST_REGEN_RATE = 10; // per second while not boosting
 export const BOOST_COOLDOWN = 2; // seconds locked out after full depletion
 
 export interface BoostState {
-  /** Current meter value, 0..max. */
   current: number;
   /** Remaining cooldown time in seconds; 0 when not on cooldown. */
   cooldown: number;
@@ -37,18 +36,11 @@ export interface BoostState {
  * constants so an argument-free call reproduces v1 behavior; the Ship passes the
  * Skill-Tree-resolved `maxBoost` / `boostRegen` values when they differ. Drain
  * rate and cooldown are not modifier-controlled and stay constant.
- *
- * @param max       Meter ceiling and starting charge (default BOOST_MAX).
- * @param regenRate Regen per second while not boosting (default BOOST_REGEN_RATE).
  */
 export function createBoostState(max = BOOST_MAX, regenRate = BOOST_REGEN_RATE): BoostState {
   return { current: max, cooldown: 0, max, regenRate };
 }
 
-/**
- * Whether a boost request would be honoured right now: there must be Boost left
- * and no active cooldown.
- */
 export function canBoost(state: BoostState): boolean {
   return state.cooldown <= 0 && state.current > 0;
 }
@@ -60,8 +52,8 @@ export function canBoost(state: BoostState): boolean {
  * just the key state).
  */
 export function updateBoost(state: BoostState, dt: number, requesting: boolean): boolean {
-  // Tick down any active cooldown first. Snap tiny float residue to 0 so the
-  // lockout can't linger an extra tick after summing dt across many frames.
+  // Snap tiny float residue to 0 so the lockout can't linger an extra tick
+  // after summing dt across many frames.
   if (state.cooldown > 0) {
     state.cooldown -= dt;
     if (state.cooldown < 1e-9) state.cooldown = 0;

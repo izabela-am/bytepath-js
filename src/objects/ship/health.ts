@@ -23,7 +23,6 @@ export const SHIP_MAX_HP = 100;
 export const SHIP_INVULN_DURATION = 0.5;
 
 export interface HealthState {
-  /** Current HP, 0..max. */
   current: number;
   /** Remaining invulnerability time in seconds; 0 when vulnerable. */
   invuln: number;
@@ -37,26 +36,22 @@ export interface HealthState {
  * the Skill-Tree-resolved `maxHp` when it differs. Damage/invuln rules are
  * unaffected by `max` (they only floor at 0), so this is purely the ceiling and
  * starting charge.
- *
- * @param max Starting and maximum HP (default SHIP_MAX_HP).
  */
 export function createHealthState(max = SHIP_MAX_HP): HealthState {
   return { current: max, invuln: 0, max };
 }
 
-/** Whether the Ship is currently invulnerable (in its post-hit window). */
 export function isInvulnerable(state: HealthState): boolean {
   return state.invuln > 0;
 }
 
-/** Whether HP has reached 0. */
 export function isDead(state: HealthState): boolean {
   return state.current <= 0;
 }
 
 /**
- * Advance the invulnerability window by `dt` seconds. Snap tiny float residue to
- * 0 so the window can't linger an extra tick after summing dt across frames.
+ * Snaps tiny float residue to 0 so the invulnerability window can't linger an
+ * extra tick after summing dt across frames.
  */
 export function updateHealth(state: HealthState, dt: number): void {
   if (state.invuln > 0) {
@@ -66,10 +61,8 @@ export function updateHealth(state: HealthState, dt: number): void {
 }
 
 /**
- * Apply `amount` damage. Ignored while invulnerable or already dead. On a landed
- * hit, subtracts HP (clamped at 0) and opens the invulnerability window. Returns
- * `true` iff this hit brought the Ship to 0 HP (i.e. killed it this call), so the
- * caller can fire the death beat exactly once.
+ * Returns `true` iff this hit brought the Ship to 0 HP (i.e. killed it this
+ * call), so the caller can fire the death beat exactly once.
  */
 export function applyDamage(state: HealthState, amount: number): boolean {
   if (isDead(state)) return false;
