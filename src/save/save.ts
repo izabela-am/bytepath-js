@@ -40,6 +40,7 @@ export function defaultSave(): SaveData {
 export function browserStorage(): SaveStorage | null {
   try {
     if (typeof window === 'undefined' || !window.localStorage) return null;
+
     return window.localStorage;
   } catch {
     // Accessing localStorage can throw (e.g. blocked cookies / sandboxed frame).
@@ -55,6 +56,7 @@ function isValidSave(value: unknown): value is SaveData {
   if (typeof v.bestScore !== 'number' || !Number.isFinite(v.bestScore)) return false;
   if (!Array.isArray(v.ownedNodes)) return false;
   if (!v.ownedNodes.every((id) => typeof id === 'string')) return false;
+
   return true;
 }
 

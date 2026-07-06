@@ -19,6 +19,7 @@ function setup(stats?: AttackStats): { sys: AttackSystem; area: Area; timer: Tim
   const area = new Area();
   const timer = new Timer();
   const sys = new AttackSystem(area, timer, stats);
+
   return { sys, area, timer };
 }
 

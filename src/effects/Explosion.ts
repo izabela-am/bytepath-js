@@ -50,6 +50,7 @@ export class Explosion extends GameObject {
       const a = randomRange(0, TWO_PI);
       const speed = randomRange(minSpeed, maxSpeed);
       const v = vectorFromAngle(a, speed);
+
       return {
         x,
         y,
@@ -65,6 +66,7 @@ export class Explosion extends GameObject {
     this.age += dt;
     if (this.age >= this.lifetime) {
       this.destroy();
+
       return;
     }
     for (const s of this.shards) {

@@ -62,6 +62,7 @@ describe('MenuState', () => {
       m.moveDown();
       m.moveDown();
       expect(m.selected).toBe('respec');
+
       return m;
     }
 

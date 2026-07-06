@@ -191,6 +191,7 @@ export class Ship extends GameObject {
     if (!this.boostingNow) return BASE_MAX_VELOCITY;
     if (this.input.isDown('ArrowUp')) return BASE_MAX_VELOCITY * BOOST_MULTIPLIER;
     if (this.input.isDown('ArrowDown')) return BASE_MAX_VELOCITY * BRAKE_MULTIPLIER;
+
     return BASE_MAX_VELOCITY;
   }
 

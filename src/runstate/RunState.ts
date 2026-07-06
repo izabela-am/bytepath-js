@@ -77,6 +77,7 @@ export class RunState {
     this.restartPending = false;
     this.phase = 'playing';
     this._sinceRestart = 0;
+
     return true;
   }
 }

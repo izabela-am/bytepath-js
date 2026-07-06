@@ -25,6 +25,7 @@ const DIRECTION_VECTORS: Record<CursorDirection, { x: number; y: number }> = {
 function index(tree: SkillTree): Map<string, SkillTree['nodes'][number]> {
   const map = new Map<string, SkillTree['nodes'][number]>();
   for (const node of tree.nodes) map.set(node.id, node);
+
   return map;
 }
 

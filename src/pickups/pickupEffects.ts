@@ -56,6 +56,7 @@ export function applyAmmoPickup(sink: AttackSink): void {
 
 export function applyBoostPickup(sink: BoostSink): number {
   sink.current = clamp(sink.current + BOOST_PICKUP_AMOUNT, 0, sink.max);
+
   return sink.current;
 }
 

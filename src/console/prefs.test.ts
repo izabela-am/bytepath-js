@@ -5,6 +5,7 @@ import type { SaveStorage } from '../save/save';
 /** In-memory storage fake, mirroring the save module's test fixture. */
 function fakeStorage(seed?: Record<string, string>): SaveStorage {
   const map = new Map<string, string>(Object.entries(seed ?? {}));
+
   return {
     getItem: (k) => map.get(k) ?? null,
     setItem: (k, v) => void map.set(k, v),

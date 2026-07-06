@@ -19,11 +19,13 @@ import type { SkillTree } from './types';
 function nodeIndex(tree: SkillTree): Map<string, SkillTree['nodes'][number]> {
   const index = new Map<string, SkillTree['nodes'][number]>();
   for (const node of tree.nodes) index.set(node.id, node);
+
   return index;
 }
 
 export function isOwned(save: SaveData, tree: SkillTree, id: string): boolean {
   if (id === tree.root) return true;
+
   return save.ownedNodes.includes(id);
 }
 
@@ -37,6 +39,7 @@ export function isPurchasable(save: SaveData, tree: SkillTree, id: string): bool
   const node = index.get(id);
   if (!node) return false;
   if (isOwned(save, tree, id)) return false;
+
   return node.edges.some((neighborId) => isOwned(save, tree, neighborId));
 }
 
@@ -68,6 +71,7 @@ export function respec(save: SaveData, tree: SkillTree): SaveData {
     const node = index.get(id);
     if (node) refund += node.cost;
   }
+
   return { ...save, sp: save.sp + refund, ownedNodes: [] };
 }
 

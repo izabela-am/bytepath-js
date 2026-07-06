@@ -60,6 +60,7 @@ export class BootSequence {
       const line = BOOT_LINES[this.lineIndex];
       if (line === undefined) {
         this.finished = true;
+
         return;
       }
 
@@ -78,6 +79,7 @@ export class BootSequence {
         this.charCount = 0;
         if (this.lineIndex >= BOOT_LINES.length) {
           this.finished = true;
+
           return;
         }
       }
@@ -94,6 +96,7 @@ export class BootSequence {
     }
     const completedLines = BOOT_LINES.slice(0, this.lineIndex);
     const line = BOOT_LINES[this.lineIndex] ?? '';
+
     return {
       completedLines,
       currentLine: line.slice(0, this.charCount),

@@ -42,6 +42,7 @@ export class Sfx {
   toggleMute(): boolean {
     this.muted = !this.muted;
     if (this.master) this.master.gain.value = this.muted ? 0 : Sfx.MASTER_VOLUME;
+
     return this.muted;
   }
 

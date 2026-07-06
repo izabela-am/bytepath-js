@@ -13,9 +13,11 @@ const FIXED_DT = 1 / 60;
 
 function fakeRand(sequence: number[]): () => number {
   let i = 0;
+
   return () => {
     const v = sequence[i % sequence.length] as number;
     i += 1;
+
     return v;
   };
 }
@@ -32,6 +34,7 @@ function makeDirector(rand?: () => number) {
     },
     ...(rand ? { rand } : {}),
   });
+
   return { director, enemies, resources };
 }
 

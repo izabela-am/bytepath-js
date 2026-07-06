@@ -52,6 +52,7 @@ export function identityModifiers(): RunModifiers {
   for (const stat of STATS) {
     mods[stat] = { flat: 0, percent: 0 };
   }
+
   return mods;
 }
 
@@ -63,6 +64,7 @@ export const IDENTITY_MODIFIERS: RunModifiers = Object.freeze(
   (() => {
     const mods = identityModifiers();
     for (const stat of STATS) Object.freeze(mods[stat]);
+
     return mods;
   })(),
 ) as RunModifiers;
@@ -82,6 +84,7 @@ export function computeRunModifiers(ownedNodeIds: readonly string[], tree: Skill
       else stat.percent += effect.amount;
     }
   }
+
   return mods;
 }
 

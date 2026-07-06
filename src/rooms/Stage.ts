@@ -277,9 +277,11 @@ export class Stage implements Room {
   private onShipHit(killed: boolean): boolean {
     if (killed) {
       this.onShipDeath();
+
       return true;
     }
     this.sfx?.shipHit();
+
     return false;
   }
 

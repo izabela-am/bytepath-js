@@ -73,9 +73,11 @@ export class MenuState {
     if (entry === 'respec') {
       if (!this.respecArmed) {
         this.respecArmed = true;
+
         return 'none';
       }
       this.respecArmed = false;
+
       return 'respec';
     }
 

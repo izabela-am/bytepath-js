@@ -28,6 +28,7 @@ export function defaultPrefs(): Prefs {
 function isValidPrefs(value: unknown): value is Prefs {
   if (typeof value !== 'object' || value === null) return false;
   const v = value as Record<string, unknown>;
+
   return typeof v.scanlines === 'boolean' && typeof v.sound === 'boolean';
 }
 
@@ -47,6 +48,7 @@ export function loadPrefs(storage: SaveStorage): Prefs {
   }
 
   if (!isValidPrefs(parsed)) return defaultPrefs();
+
   return { scanlines: parsed.scanlines, sound: parsed.sound };
 }
 

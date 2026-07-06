@@ -69,6 +69,7 @@ export const Easing = {
   outBack: (t: number): number => {
     const c1 = 1.70158;
     const c3 = c1 + 1;
+
     return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
   },
 } as const;
@@ -78,11 +79,13 @@ export class Timer {
 
   after(delay: number, fn: () => void, tag?: string): TimerHandle {
     const entry: AfterEntry = { kind: 'after', tag, time: 0, delay, fn };
+
     return this.push(entry);
   }
 
   every(interval: number, fn: () => void, count = Infinity, tag?: string): TimerHandle {
     const entry: EveryEntry = { kind: 'every', tag, time: 0, interval, count, fn };
+
     return this.push(entry);
   }
 
@@ -115,6 +118,7 @@ export class Timer {
       easing,
       onComplete,
     };
+
     return this.push(entry);
   }
 
@@ -126,6 +130,7 @@ export class Timer {
     tag?: string,
   ): TimerHandle {
     const entry: DuringEntry = { kind: 'during', tag, time: 0, duration, fn, onComplete };
+
     return this.push(entry);
   }
 
@@ -197,6 +202,7 @@ export class Timer {
 
   private push<T extends Entry>(entry: T): T {
     this.entries.push(entry);
+
     return entry;
   }
 }

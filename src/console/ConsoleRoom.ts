@@ -157,6 +157,7 @@ export class ConsoleRoom implements Room {
     if (input.pressed('Escape')) {
       this.menu.reset();
       this.screen = 'menu';
+
       return;
     }
 
@@ -189,6 +190,7 @@ export class ConsoleRoom implements Room {
     if (input.pressed('ArrowDown')) return 'down';
     if (input.pressed('ArrowLeft')) return 'left';
     if (input.pressed('ArrowRight')) return 'right';
+
     return null;
   }
 
@@ -212,6 +214,7 @@ export class ConsoleRoom implements Room {
 
   private anyKeyPressed(): boolean {
     const input = this.deps.input;
+
     return (
       input.pressed('Enter') ||
       input.pressed('Space') ||
@@ -289,6 +292,7 @@ export class ConsoleRoom implements Room {
     const scan = this.deps.getScanlines() ? 'on' : 'off';
     const sound = this.deps.getSoundOn() ? 'on' : 'off';
     const respec = this.menu.isRespecArmed ? 'respec  confirm?' : 'respec';
+
     return ['new run', 'skill tree', respec, `scanlines: ${scan}`, `sound: ${sound}`];
   }
 
@@ -430,10 +434,12 @@ export class ConsoleRoom implements Room {
 
   private effectSummary(node: SkillTree['nodes'][number]): string {
     if (node.effects.length === 0) return 'core';
+
     return node.effects
       .map((e) => {
         const sign = e.amount >= 0 ? '+' : '';
         const value = e.kind === 'percent' ? `${sign}${Math.round(e.amount * 100)}%` : `${sign}${e.amount}`;
+
         return `${value} ${e.stat}`;
       })
       .join('  ');

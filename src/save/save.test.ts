@@ -13,6 +13,7 @@ import {
 
 function fakeStorage(seed?: string): SaveStorage & { raw(): string | null } {
   let value: string | null = seed ?? null;
+
   return {
     getItem: () => value,
     setItem: (_key, v) => {

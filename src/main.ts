@@ -33,6 +33,7 @@ function isTouchOnly(): boolean {
   // Coarse pointer + no fine pointer ~= phone/tablet with no physical keyboard.
   const coarse = window.matchMedia('(pointer: coarse)').matches;
   const fine = window.matchMedia('(pointer: fine)').matches;
+
   return coarse && !fine;
 }
 
@@ -63,12 +64,14 @@ function fitCanvas(canvas: HTMLCanvasElement): void {
  */
 function resolveSkillTree(): SkillTree {
   const full = (treeData as { skillTree?: SkillTree }).skillTree;
+
   return full ?? treeData.sampleTree;
 }
 
 /** In-memory storage fallback so persistence silently no-ops off-browser. */
 function memoryStorage(): SaveStorage {
   const map = new Map<string, string>();
+
   return {
     getItem: (k) => map.get(k) ?? null,
     setItem: (k, v) => void map.set(k, v),
@@ -79,6 +82,7 @@ function memoryStorage(): SaveStorage {
 function main(): void {
   if (isTouchOnly()) {
     showKeyboardRequired();
+
     return;
   }
 
@@ -130,6 +134,7 @@ function main(): void {
         respec: () => {
           save = respecSave(save, tree);
           store(storage, save);
+
           return save;
         },
         onStartRun: () => enterStage(),
@@ -137,6 +142,7 @@ function main(): void {
         toggleScanlines: () => {
           prefs.scanlines = !prefs.scanlines;
           persistPrefs();
+
           return prefs.scanlines;
         },
         getSoundOn: () => !sfx.isMuted,
@@ -144,6 +150,7 @@ function main(): void {
           const muted = sfx.toggleMute();
           prefs.sound = !muted;
           persistPrefs();
+
           return !muted;
         },
         results,

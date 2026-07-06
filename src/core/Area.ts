@@ -20,6 +20,7 @@ export class Area {
   add<T extends GameObject>(object: T): T {
     object.area = this;
     this.objects.push(object);
+
     return object;
   }
 
@@ -45,6 +46,7 @@ export class Area {
     for (const object of this.objects) {
       if (!object.dead && object instanceof cls) result.push(object as T);
     }
+
     return result;
   }
 
@@ -56,6 +58,7 @@ export class Area {
   get count(): number {
     let n = 0;
     for (const o of this.objects) if (!o.dead) n += 1;
+
     return n;
   }
 
@@ -65,6 +68,7 @@ export class Area {
    */
   static circlesOverlap(a: GameObject, b: GameObject): boolean {
     if (a.radius <= 0 || b.radius <= 0) return false;
+
     return distance(a.x, a.y, b.x, b.y) <= a.radius + b.radius;
   }
 
@@ -81,6 +85,7 @@ export class Area {
         result.push(other as T);
       }
     }
+
     return result;
   }
 
@@ -101,6 +106,7 @@ export class Area {
         result.push(other as T);
       }
     }
+
     return result;
   }
 

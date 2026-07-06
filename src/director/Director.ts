@@ -143,6 +143,7 @@ export class Director {
     }
     if (canShooter) return 'Shooter';
     if (canRock) return 'Rock';
+
     return null;
   }
 
@@ -153,6 +154,7 @@ export class Director {
       cumulative += weight;
       if (roll < cumulative) return name;
     }
+
     // Floating-point guard: return the last entry if the roll grazes 1.
     return RESOURCE_WEIGHTS[RESOURCE_WEIGHTS.length - 1]!.name;
   }
